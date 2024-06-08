@@ -9,8 +9,9 @@ export interface IMTF extends Document {
         leftAnswer: QuesitonType;
         rightAnswer: QuesitonType[];
     }[];
-    time?:string;
+    time:string;
     tag?:string;
+    type:string;
 }
 
 const mtfSchema = new mongoose.Schema<IMTF>({
@@ -29,6 +30,11 @@ const mtfSchema = new mongoose.Schema<IMTF>({
     },
     tag: {
         type: String,
+        trim: true,
+    },
+    type: {
+        type: String,
+        required:true,
         trim: true,
     },
     time: { type: String,trim:true },

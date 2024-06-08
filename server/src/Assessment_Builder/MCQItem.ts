@@ -6,6 +6,7 @@ export class MCQItem {
     private options: QuesitonType[];
     private answers: QuesitonType[];
     private time: string;
+    private type:string;
     private tag?: string;
 
     constructor(
@@ -13,12 +14,14 @@ export class MCQItem {
         options: QuesitonType[],
         answers: QuesitonType[],
         time: string,
+        type:string,
         tag?: string
     ) {
         this.question = question;
         this.answers = answers;
         this.options = options;
         this.time = time;
+        this.type = type;
         this.tag = tag ?? "";
     }
 
@@ -28,6 +31,7 @@ export class MCQItem {
             options: this.options,
             answers: this.answers,
             time: this.time,
+            type:this.type,
             tag: this.tag ?? ""
         });
         return String(mcq._id);

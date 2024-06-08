@@ -10,6 +10,7 @@ export class MTFItem {
         rightAnswer: QuesitonType[];
     }[];
     private time: string;
+    private type:string;
     private tag?: string;
 
     constructor(
@@ -18,6 +19,7 @@ export class MTFItem {
         rightOptions: QuesitonType[],
         answers: { leftAnswer: QuesitonType; rightAnswer: QuesitonType[] }[],
         time: string,
+        type:string,
         tag?: string
     ) {
         this.question = question;
@@ -25,6 +27,7 @@ export class MTFItem {
         this.rightOptions = rightOptions;
         this.answers = answers;
         this.time = time;
+        this.type = type;
         this.tag = tag ?? "";
     }
     async create() {

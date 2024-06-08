@@ -5,11 +5,13 @@ export class FIBItem{
     private answers: QuesitonType[];
     private time: string;
     private tag?:string;
+    private type:string;
 
-    constructor(question:QuesitonType[],answers:QuesitonType[],time:string,tag?:string){
+    constructor(question:QuesitonType[],answers:QuesitonType[],time:string,type:string,tag?:string){
         this.question = question;
         this.answers = answers;
         this.time = time;
+        this.type = type;
         if(tag) {
             this.tag = tag;
         }
@@ -20,6 +22,7 @@ export class FIBItem{
             question:this.question,
             answers:this.answers,
             time:this.time,
+            type:this.type,
             tag:this.tag??""
         })
         return String(fib._id);
