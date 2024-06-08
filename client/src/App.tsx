@@ -2,6 +2,7 @@ import { useState } from 'react';
 import './App.css'; // Assuming you have a CSS file for styling
 import InputField from './components/InputField';
 import DisplayPart from './components/DisplayPart';
+import axios from 'axios';
 
 interface Parts {
   name: string;
@@ -22,14 +23,14 @@ interface Parts {
 
 interface Template {
   type: string;
-  duration?: string;
+  time?: string;
   parts?: Parts[];
 }
 
 function App() {
   const [template, setTemplate] = useState<Template>({
     type: '',
-    duration: '',
+    time: '',
     parts: [],
   });
   const [isOpen, setIsOpen] = useState(false);
@@ -121,8 +122,12 @@ function App() {
     setIsOpen(false);
   };
 
-  const handleSave = () => {
-    console.log(template);
+  const handleSave = async () => {
+    console.table(template)
+    const res = await axios.post('http://localhost:5000/api/add-template',{
+        template
+    })
+    console.log(res.data.templateId)
   }
 
   return (
@@ -131,7 +136,7 @@ function App() {
         <div className="text-[2rem] font-bold">Create New Template</div>
         <div className="grid grid-cols-2 gap-2">
           <InputField label={"Template Type"} name={'type'} value={template.type} onChange={handleChange} />
-          <InputField label={"Template Duration"} name={'duration'} value={template.duration ?? ""} onChange={handleChange} />
+          <InputField label={"Template time"} name={'time'} value={template.time ?? ""} onChange={handleChange} />
         </div>
         <div className="flex flex-col gap-2">
           <div className='grid grid-cols-5'>

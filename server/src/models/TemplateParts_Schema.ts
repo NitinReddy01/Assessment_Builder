@@ -45,7 +45,7 @@ const partsSchema = new mongoose.Schema({
         },
         key:{
             type:String,
-            required:true
+            required:false
         }
         },
     },
