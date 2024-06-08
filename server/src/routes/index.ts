@@ -14,6 +14,22 @@ router.post('/add-template',async (req,res)=>{
         return res.status(201).json({templateId});
     } catch (error) {
         console.log(error);
+        res.status(500).json({message:"Internal Server Error"});
+    }
+})
+
+router.post('/add-assessment',async (req,res) =>{
+    try {
+        const type:string = req.body.type;
+        const title:string = req.body.title;
+        const assessment:Template  = req.body.assessment;
+        const time = req.body.time;
+        const newAssessment = new AssessmentBuilder();
+        const id = await newAssessment.createAssessment(title,assessment,type,time)
+        res.status(201).json({message:"Assessment Created"});
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message:"Internal Server Error"});
     }
 })
 

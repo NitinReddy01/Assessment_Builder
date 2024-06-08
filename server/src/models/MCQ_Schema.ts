@@ -2,10 +2,11 @@ import mongoose, { Document } from "mongoose";
 import { QuesitonType } from "./FIB_Schema";
 
 export interface IMCQ extends Document {
+    type:string;
     question: QuesitonType[];
     options: QuesitonType[];
     answers: QuesitonType[];
-    time?:string;
+    time:string;
     tag?:string;
 }
 
@@ -26,6 +27,11 @@ const mcqSchema = new mongoose.Schema<IMCQ>({
     },
     time: {
         type: String,
+        trim: true,
+    },
+    type: {
+        type: String,
+        required:true,
         trim: true,
     },
     tag: {

@@ -8,8 +8,9 @@ export interface QuesitonType{
 export interface IFIB extends Document {
     question: QuesitonType[];
     answers: QuesitonType[];
-    time?: string;
+    time: string;
     tag:string;
+    type:string;
 }
 
 const fibSchema = new mongoose.Schema<IFIB>({
@@ -28,6 +29,11 @@ const fibSchema = new mongoose.Schema<IFIB>({
     },
     time: {
         type: String,
+        trim: true,
+    },
+    type: {
+        type: String,
+        required:true,
         trim: true,
     },
     tag: {
