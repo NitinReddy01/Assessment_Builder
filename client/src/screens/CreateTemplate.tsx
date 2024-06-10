@@ -49,6 +49,7 @@ function CreateTemplate() {
       { grade: { questionType: 'FIB', weightage: 0 } },
       { grade: { questionType: 'MCQ', weightage: 0 } },
       { grade: { questionType: 'MTF', weightage: 0 } },
+      { grade: { questionType: 'Audio', weightage: -1 } },
     ],
   });
 
@@ -100,6 +101,23 @@ function CreateTemplate() {
     });
   };
 
+  const handlePartAudioPolicy = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewPart((prev) => {
+      const updatedPolicies = [...prev.policies];
+      updatedPolicies[3] = {
+        ...updatedPolicies[3],
+        grade: {
+          ...updatedPolicies[3].grade,
+          weightage: -1*updatedPolicies[3].grade.weightage,
+        },
+      };
+      return {
+        ...prev,
+        policies: updatedPolicies,
+      };
+    });
+  };
+
   const addNewPart = () => {
     setTemplate((prev) => ({
       ...prev,
@@ -138,8 +156,10 @@ function CreateTemplate() {
 
   return (
     <div>
-      <div className="p-16">
-        <div className="text-[2rem] font-bold">Create New Template</div>
+      <div className="px-16">
+        <div className="flex justify-between mb-4 bg-neutral-300 rounded-lg p-10">
+          <div className="flex items-center font-bold text-xl">Create Template</div>
+        </div>
         <div className="grid grid-cols-2 gap-2">
           <InputField label={"Template Type"} name={'type'} value={template.type} onChange={handleChange} />
           <InputField label={"Template time"} name={'time'} value={template.time ?? ""} onChange={handleChange} />
@@ -172,8 +192,6 @@ function CreateTemplate() {
 
                 </div>
               ))}
-
-
             {isOpen && (
               <div className="fixed inset-0 z-50 flex items-center justify-center overflow-auto bg-black bg-opacity-50">
                 <div className="relative bg-neutral-100 w-[90%] p-16 rounded-lg">
@@ -202,6 +220,15 @@ function CreateTemplate() {
                   </div>
                   <div className='grid grid-cols-2'>
                     <div>
+                      <div className='flex gap-4 items-center'>
+                        <div
+                          className={`p-2 ${newPart.policies[3].grade.weightage==1 ? "bg-primary-500" : "bg-neutral-500"} rounded-full`}
+                          onClick={() => {handlePartAudioPolicy}}
+                        >
+                          <div className={`p-1 bg-neutral-100 rounded-full`} />
+                        </div>
+                        <div className='my-4'>Audio Input Test<span className="text-error-800">*</span></div>
+                      </div>
                       <div className='my-4'>Policy<span className="text-error-800">*</span></div>
                       <div className='grid grid-cols-2'>
                         <div>
