@@ -1,7 +1,7 @@
 const navItems = [
     {
         name:"Assessments",
-        link:"/assessments"
+        link:"/"
     },
     {
         name:"Templates",
