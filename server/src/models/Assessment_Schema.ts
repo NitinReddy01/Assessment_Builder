@@ -5,6 +5,7 @@ export interface IAsessment{
     title:string;
     time:string;
     parts:Array<mongoose.Schema.Types.ObjectId>;
+    templateType:string;
 }
 
 const assessmentSchema = new mongoose.Schema({
@@ -17,6 +18,11 @@ const assessmentSchema = new mongoose.Schema({
         type:String,
         required:true,
         trim:true
+    },
+    templateType:{
+        type:String,
+        trim:true,
+        default:"-"
     },
     time:{
         type:String,

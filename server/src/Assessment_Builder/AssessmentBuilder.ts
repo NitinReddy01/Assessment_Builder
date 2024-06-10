@@ -23,7 +23,7 @@ export interface Parts{
     items:(IMCQ | IMTF | IFIB)[]
 }
 
-export interface Template{
+export interface ITemplate{
     type:string,
     time:string,
     parts:Parts[]
@@ -51,7 +51,7 @@ export class AssessmentBuilder{
     //     }
     // }
 
-    async createTemplate(template:Template){
+    async createTemplate(template:ITemplate){
         let partsId  = await Promise.all(template.parts.map(async (part)=>{
             const newPart = await Parts.create({
                 name:part.name,
@@ -71,7 +71,7 @@ export class AssessmentBuilder{
         return String(temp._id);
     }
 
-    async createAssessment(title:string,assessment:Template,type:string,time:string){
+    async createAssessment(title:string,assessment:ITemplate,type:string,time:string){
             let partIds = await Promise.all(assessment.parts.map(async (part)=>{
                 const itemIds  = await Promise.all(part.items.map(async (item)=>{
                     if(item.type==="FIB") {
