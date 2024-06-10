@@ -13,6 +13,7 @@ function App() {
         <Route path='/create-template' element={<CreateTemplate/>} />
         <Route path='/assessments' element={<Assessments/>} />
         <Route path='/templates' element={<Templates/>} />
+        <Route path='/add-template' element={<CreateTemplate/>} />
       </Route>
     </Routes>
     </>

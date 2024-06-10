@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import navItems from "./NavItems";
+import eksaqLogo from "../../assets/EksaqLogo.png"
 
 function Navbar() {
   const [activeTab, setActiveTab] = useState("Assessments");
@@ -8,17 +9,18 @@ function Navbar() {
   return (
     <nav className="z-30">
       <div className="flex flex-col">
-        <div className="flex relative items-center max-w-screen md:gap-[4%] text-black md:p-4 ">
+        <div className="grid grid-cols-3 relative items-center max-w-screen md:gap-[4%] text-black md:p-4 ">
           {/* Logo */}
           <div className="lg:relative md:mb-6">
             <img
+            src={eksaqLogo}
               className="w-[8rem] h-[2rem] lg:w-[12rem] lg:h-[4rem] lg:p-2 lg:ml-8"
               alt="Logo"
             />
           </div>
 
           {/* Desktop Navigation */}
-          <div>
+          <div className="flex">
             <ul className="flex md:flex-wrap justify-between lg:gap-4">
               {navItems.map((item, index) => (
                 <li key={index} className="mx-2 my-4">
