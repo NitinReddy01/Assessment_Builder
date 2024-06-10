@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { AssessmentBuilder, ITemplate } from "../Assessment_Builder/AssessmentBuilder";
 import Template from "../models/Template_Schema";
+import { IParts } from "../models/TemplateParts_Schema";
 
 const templateRouter = Router();
 
@@ -23,6 +24,20 @@ templateRouter.get('/all-templates',async (req,res)=>{
     try {
         const templates = await Template.find({}).select("type");
         res.status(200).json({templates});
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message:"Internal Server Error"});
+    }
+})
+
+templateRouter.get('/template/:id',async (req,res)=>{
+    try {
+        const id = req.params.id;
+        if(!id ) {
+            return res.status(400).json({message:"Id required"});
+        } 
+        const template = await Template.findById(id).populate<{parts:IParts}>("parts");
+        res.status(200).json({template});
     } catch (error) {
         console.log(error);
         res.status(500).json({message:"Internal Server Error"});

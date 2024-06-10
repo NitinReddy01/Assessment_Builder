@@ -15,7 +15,6 @@ export default function Templates() {
         const getTemplates = async ()=>{
             try {
                 const res = await axios.get('/all-templates');
-                console.table(res.data.templates)
                 setTemplates(res.data.templates);
             } catch (error) {
                 console.log(error);

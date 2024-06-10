@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import InputField from '../components/InputField';
 import DisplayPart from '../components/DisplayPart';
-import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import axios from '../api/axios';
 
-interface Parts {
+export interface Parts {
   name: string;
   instruction: string;
   description: string;
@@ -20,13 +21,14 @@ interface Parts {
   }[];
 }
 
-interface Template {
+export interface Template {
   type: string;
   time?: string;
   parts?: Parts[];
 }
 
 function CreateTemplate() {
+  const navigate = useNavigate();
   const [template, setTemplate] = useState<Template>({
     type: '',
     time: '',
@@ -140,11 +142,16 @@ function CreateTemplate() {
   };
 
   const handleSave = async () => {
-    console.table(template)
-    const res = await axios.post('http://localhost:5000/api/add-template', {
-      template
+    try {
+      await axios.post('/add-template',{
+        template
     })
-    console.log(res.data.templateId)
+    alert("Template Created")
+    navigate(-1);
+    } catch (error) {
+      console.log(error);
+      alert("Creation Failed")
+    }
   }
 
   return (

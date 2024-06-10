@@ -7,7 +7,9 @@ export default function Layout() {
       <nav className='bg-neutral-100' >
         <Navbar/>
       </nav>
+      <div className='p-8' >
         <Outlet/>
+      </div>
     </>
   )
 }
