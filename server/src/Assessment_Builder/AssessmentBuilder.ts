@@ -93,7 +93,7 @@ export class AssessmentBuilder{
                         const newMTF = new MTFItem(mtfItem.question,mtfItem.leftOptions,mtfItem.rightOptions,mtfItem.answers,mtfItem.time,mtfItem.type);
                         const id = await newMTF.create();
                         return {questionType:item.type,questionId:id};
-                    } else if(item.type === "audio") {
+                    } else if(item.type === "AudioQuestion") {
                         const newAudio = new AudioQuestionItem(item.question,item.type,item.time);
                         const id = await newAudio.create();
                         return {questionType:item.type,questionId:id}

@@ -34,7 +34,7 @@ export default function Templates() {
       }
       <div className="flex justify-between mb-4 bg-neutral-300 rounded-lg p-10">
         <div className="flex items-center font-bold text-xl">Templates</div>
-        <div onClick={()=>{navigate("/add-template")}} className="cursor-pointer bg-primary-500 text-neutral-100 font-bold h-10 flex items-center px-4 rounded-lg">+ Create Templates</div>
+        <div onClick={()=>{navigate("/create-template")}} className="cursor-pointer bg-primary-500 text-neutral-100 font-bold h-10 flex items-center px-4 rounded-lg">+ Create Templates</div>
       </div>
       <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-4 p-8">
       {
