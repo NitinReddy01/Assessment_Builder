@@ -13,7 +13,10 @@ export interface IParts extends Document {
             weightage:string
         }[]
     };
-    items:Array<mongoose.Schema.Types.ObjectId>
+    items:{
+        questionType:string,
+        questionId:mongoose.Schema.Types.ObjectId;
+    }[]
 }
 
 const partsSchema = new mongoose.Schema({
@@ -62,7 +65,6 @@ const partsSchema = new mongoose.Schema({
     items:[{
         questionType: {
             type: String,
-            required: true,
             enum: ["FIB", "MCQ", "MTF","AudioQuestion"],
         },
         questionId: {

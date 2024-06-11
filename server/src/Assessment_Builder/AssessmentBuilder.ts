@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import Assessment from "../models/Assessment_Schema";
 import { IAudioQuestion } from "../models/AudioQuestion";
 import { IFIB, QuesitonType } from "../models/FIB_Schema";
@@ -10,7 +11,7 @@ import { FIBItem } from "./FIBItem";
 import { MCQItem } from "./MCQItem";
 import { MTFItem } from "./MTFItem";
 
-export interface Parts{
+export interface AssessmentParts{
     name:string;
     instruction:string;
     description:string;
@@ -25,10 +26,31 @@ export interface Parts{
     items:(IMCQ | IMTF | IFIB | IAudioQuestion)[]
 }
 
+export interface Parts{
+    name:string;
+    instruction:string;
+    description:string;
+    time:string;
+    content:QuesitonType;
+    policies:{
+        grade:{
+            questionType:string;
+            weightage:string
+        }[]
+    };
+    items:{questionType:string,questionId:mongoose.Schema.Types.ObjectId}[]
+}
+
 export interface ITemplate{
     type:string,
     time:string,
     parts:Parts[]
+}
+
+export interface AssessmentTemplate{
+    type:string,
+    time:string,
+    parts:AssessmentParts[]
 }
 
 export interface PopulatedTemplate {
@@ -56,7 +78,7 @@ export class AssessmentBuilder{
     async createTemplate(template:ITemplate){
         let partsId  = await Promise.all(template.parts.map(async (part)=>{
             const itemIds  = part.items.map(item=>{
-                return {questionType:item.type};
+                return {questionType:item.questionType};
             })
             const newPart = await Parts.create({
                 name:part.name,
@@ -77,7 +99,7 @@ export class AssessmentBuilder{
         return String(temp._id);
     }
 
-    async createAssessment(title:string,assessment:ITemplate,type:string,time:string){
+    async createAssessment(title:string,assessment:AssessmentTemplate,type:string,time:string){
             let partIds = await Promise.all(assessment.parts.map(async (part)=>{
                 const itemIds  = await Promise.all(part.items.map(async (item)=>{
                     if(item.type==="FIB") {
