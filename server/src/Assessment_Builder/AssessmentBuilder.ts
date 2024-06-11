@@ -26,25 +26,10 @@ export interface AssessmentParts{
     items:(IMCQ | IMTF | IFIB | IAudioQuestion)[]
 }
 
-export interface Parts{
-    name:string;
-    instruction:string;
-    description:string;
-    time:string;
-    content:QuesitonType;
-    policies:{
-        grade:{
-            questionType:string;
-            weightage:string
-        }[]
-    };
-    items:{questionType:string,questionId:mongoose.Schema.Types.ObjectId}[]
-}
-
 export interface ITemplate{
     type:string,
     time:string,
-    parts:Parts[]
+    parts:IParts[]
 }
 
 export interface AssessmentTemplate{
@@ -52,28 +37,7 @@ export interface AssessmentTemplate{
     time:string,
     parts:AssessmentParts[]
 }
-
-export interface PopulatedTemplate {
-    type:string,
-    time:string,
-    parts:IParts[];
-}
-
 export class AssessmentBuilder{
-    // private template:PopulatedTemplate | null = null;
-
-    //  constructor(templateId?:string){
-    //     if(templateId) {
-    //         Template.findById(templateId).populate<{"parts":IParts[]}>("parts").then(template=>{
-    //             if(template) {
-    //                 this.template = template;
-    //                 console.log(template);
-    //             }
-    //         }).catch(err=>{
-    //             console.log(err);
-    //         });
-    //     }
-    // }
 
     // FIXME: need to handle duplicate of templates (type must be unique)
     async createTemplate(template:ITemplate){
@@ -81,6 +45,7 @@ export class AssessmentBuilder{
             const itemIds  = part.items.map(item=>{
                 return {questionType:item.questionType};
             })
+            console.log(part.policies);
             const newPart = await Parts.create({
                 name:part.name,
                 instruction:part.instruction,
@@ -101,26 +66,27 @@ export class AssessmentBuilder{
     }
 
     // FIXME: need to handle duplicate of assessments ( title must be unique )
-    async createAssessment(title:string,assessment:AssessmentTemplate,type:string,time:string,templateType:string){
-            let partIds = await Promise.all(assessment.parts.map(async (part)=>{
+    async createAssessment(title:string,assessment:AssessmentParts[],type:string,time:string,templateType:string){
+            let partIds = await Promise.all(assessment.map(async (part)=>{
                 const itemIds  = await Promise.all(part.items.map(async (item)=>{
-                    if(item.type==="FIB") {
-                        const newFib = new FIBItem(item.question,(item as IFIB ).answers ,item.time,item.type);
+                    if(item.questionType==="FIB") {
+                        const newFib = new FIBItem(item.question,(item as IFIB ).answers ,item.time,item.questionType);
                         const id = await newFib.create();
-                        return {questionType:item.type,questionId:id};
-                    } else if(item.type === "MCQ") {
-                        const newMcq = new MCQItem(item.question,((item as IMCQ ).options),(item as IMCQ).answers ,item.time,item.type)
+                        return {questionType:item.questionType,questionId:id};
+                    } 
+                    else if(item.questionType === "MCQ") {
+                        const newMcq = new MCQItem(item.question,((item as IMCQ ).options),(item as IMCQ).answers ,item.time,item.questionType)
                         const id = await newMcq.create();
-                        return {questionType:item.type,questionId:id};
-                    } else if(item.type === "MTF") {
+                        return {questionType:item.questionType,questionId:id};
+                    } else if(item.questionType === "MTF") {
                         let mtfItem = item as IMTF;
-                        const newMTF = new MTFItem(mtfItem.question,mtfItem.leftOptions,mtfItem.rightOptions,mtfItem.answers,mtfItem.time,mtfItem.type);
+                        const newMTF = new MTFItem(mtfItem.question,mtfItem.leftOptions,mtfItem.rightOptions,mtfItem.answers,mtfItem.time,mtfItem.questionType);
                         const id = await newMTF.create();
-                        return {questionType:item.type,questionId:id};
-                    } else if(item.type === "AudioQuestion") {
-                        const newAudio = new AudioQuestionItem(item.question,item.type,item.time);
+                        return {questionType:item.questionType,questionId:id};
+                    } else if(item.questionType === "AudioQuestion") {
+                        const newAudio = new AudioQuestionItem(item.question,item.questionType,item.time);
                         const id = await newAudio.create();
-                        return {questionType:item.type,questionId:id}
+                        return {questionType:item.questionType,questionId:id}
                     } else {
                         throw new Error("Invalid Question Type");
                     }

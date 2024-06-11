@@ -22,7 +22,7 @@ export class FIBItem{
             question:this.question,
             answers:this.answers,
             time:this.time,
-            type:this.type,
+            questionType:this.type,
             tag:this.tag??""
         })
         return String(fib._id);

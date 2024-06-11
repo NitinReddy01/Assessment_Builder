@@ -1,9 +1,8 @@
-
 import React, { ChangeEvent, useEffect, useState } from "react";
 import { AssessmentParts } from "../screens/CreateAssessment";
 import InputField from "./InputField";
 import ToggleButton from "./buttons/ToggleButton";
-
+import axios from "../api/axios";
 
 interface AssessmentFormProps {
   template: string;
@@ -26,32 +25,39 @@ interface CreateParts {
   instruction: string;
   description: string;
   time: string;
+  content: Answer;
+  policies: {
+    grade: {
+      questionType: string;
+      weightage: number;
+    };
+  }[];
   items: {
     questionType: string;
     tag: string;
-    question: string;
-    fibAnswers?: Answer[]
+    question: Answer[];
+    fibAnswers?: Answer[];
     options?: {
       contentType: string;
       key: {
         value: string;
         isAnswer: boolean;
       };
-    }[]
-    leftOptions?: Answer[],
-    rightOptions?: Answer[],
+    }[];
+    leftOptions?: Answer[];
+    rightOptions?: Answer[];
     mtfAnswers?: {
       leftAnswer?: Answer;
       rightAnswer?: Answer;
     }[];
-  }[]
+  }[];
 }
 interface CreateAssessment {
   title: string;
   templateType: string;
   type: string;
   time: string;
-  parts?: CreateParts[]
+  parts?: CreateParts[];
 }
 
 const AssessmentForm = ({
@@ -62,7 +68,6 @@ const AssessmentForm = ({
   time,
   type,
 }: AssessmentFormProps) => {
-
   const handlePartChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     partIndex: number
@@ -70,7 +75,18 @@ const AssessmentForm = ({
     const { name, value } = e.target;
     setParts((prev) => {
       const updatedParts = [...prev];
-      const updatedPart = { ...updatedParts[partIndex], [name]: value };
+      const updatedPart = name === 'content' 
+        ? { 
+            ...updatedParts[partIndex], 
+            content: {
+              ...updatedParts[partIndex].content,
+              key: value
+            }
+          }
+        : { 
+            ...updatedParts[partIndex], 
+            [name]: value 
+          };
       updatedParts[partIndex] = updatedPart;
       return updatedParts;
     });
@@ -78,11 +94,12 @@ const AssessmentForm = ({
   function handleQuestionChange(
     e: ChangeEvent<HTMLInputElement>,
     partIndex: number,
-    questionIndex: number,
+    questionIndex: number
   ) {
     setAssessments((prev) => {
       let updatedAssessment = { ...prev };
-      updatedAssessment.parts![partIndex].items[questionIndex].question = e.target.value;
+      updatedAssessment.parts![partIndex].items[questionIndex].question[0].key =
+        e.target.value;
       return updatedAssessment;
     });
   }
@@ -90,15 +107,20 @@ const AssessmentForm = ({
   function handleFIBQuestionChange(
     e: ChangeEvent<HTMLInputElement>,
     partIndex: number,
-    questionIndex: number,
+    questionIndex: number
   ) {
     const matches = e.target.value.match(/__/g);
     const blanksCount = matches ? matches.length : 0;
 
     setAssessments((prev) => {
       let updatedAssessment = { ...prev };
-      updatedAssessment.parts![partIndex].items[questionIndex].question = e.target.value;
-      updatedAssessment.parts![partIndex].items[questionIndex].fibAnswers = Array.from({ length: blanksCount }, () => ({ contentType: "text", key: "" }));
+      updatedAssessment.parts![partIndex].items[questionIndex].question[0].key =
+        e.target.value;
+      updatedAssessment.parts![partIndex].items[questionIndex].fibAnswers =
+        Array.from({ length: blanksCount }, () => ({
+          contentType: "text",
+          key: "",
+        }));
       return updatedAssessment;
     });
   }
@@ -106,53 +128,71 @@ const AssessmentForm = ({
     e: ChangeEvent<HTMLInputElement>,
     partIndex: number,
     questionIndex: number,
-    answerIndex?: number,
+    answerIndex?: number
   ) {
     setAssessments((prev) => {
       let updatedAssessment = { ...prev };
-      updatedAssessment.parts![partIndex].items[questionIndex].fibAnswers![answerIndex!].key = e.target.value
+      updatedAssessment.parts![partIndex].items[questionIndex].fibAnswers![
+        answerIndex!
+      ].key = e.target.value;
       return updatedAssessment;
     });
   }
-
 
   function addMCQOption(partIndex: number, questionIndex: number) {
     setAssessments((prev) => {
       const updatedAssessment = { ...prev };
-      const currentOptions = updatedAssessment.parts![partIndex].items[questionIndex].options || [];
-      updatedAssessment.parts![partIndex].items[questionIndex].options = [...currentOptions, { contentType: "text", key: { value: "", isAnswer: false } }];
-      console.log(updatedAssessment.parts![partIndex].items[questionIndex].options)
+      const currentOptions =
+        updatedAssessment.parts![partIndex].items[questionIndex].options || [];
+      updatedAssessment.parts![partIndex].items[questionIndex].options = [
+        ...currentOptions,
+        { contentType: "text", key: { value: "", isAnswer: false } },
+      ];
       return updatedAssessment;
     });
   }
 
-  function handleMCQOptionChange(e: ChangeEvent<HTMLInputElement>, partIndex: number, questionIndex: number, optionIndex: number) {
+  function handleMCQOptionChange(
+    e: ChangeEvent<HTMLInputElement>,
+    partIndex: number,
+    questionIndex: number,
+    optionIndex: number
+  ) {
     setAssessments((prev) => {
       const updatedAssessment = { ...prev };
-      updatedAssessment.parts![partIndex].items[questionIndex].options![optionIndex].key.value = e.target.value;
+      updatedAssessment.parts![partIndex].items[questionIndex].options![
+        optionIndex
+      ].key.value = e.target.value;
       return updatedAssessment;
     });
   }
 
-  function removeMCQOption(partIndex: number, questionIndex: number, optionIndex: number) {
+  function removeMCQOption(
+    partIndex: number,
+    questionIndex: number,
+    optionIndex: number
+  ) {
     setAssessments((prev) => {
       const updatedAssessment = { ...prev };
-      const options = updatedAssessment.parts![partIndex].items[questionIndex].options || [];
-      updatedAssessment.parts![partIndex].items[questionIndex].options = options.filter((_, idx) => idx !== optionIndex);
+      const options =
+        updatedAssessment.parts![partIndex].items[questionIndex].options || [];
+      updatedAssessment.parts![partIndex].items[questionIndex].options =
+        options.filter((_, idx) => idx !== optionIndex);
       return updatedAssessment;
     });
   }
-
 
   function handleMCQAnswers(
     partIndex: number,
     questionIndex: number,
     optionIndex: number,
-    add: boolean,
+    add: boolean
   ) {
     setAssessments((prev) => {
       const updatedAssessment = { ...prev };
-      updatedAssessment.parts![partIndex].items[questionIndex].options![optionIndex].key.isAnswer = add;
+      updatedAssessment.parts![partIndex].items[questionIndex].options![
+        optionIndex
+      ].key.isAnswer = add;
       return updatedAssessment;
     });
   }
@@ -160,11 +200,18 @@ const AssessmentForm = ({
   function addMTFOptions(partIndex: number, questionIndex: number) {
     setAssessments((prev) => {
       const updatedAssessment = { ...prev };
-      updatedAssessment.parts![partIndex].items![questionIndex].leftOptions!.push({ contentType: "text", key: "" });
-      updatedAssessment.parts![partIndex].items![questionIndex].rightOptions!.push({ contentType: "text", key: "" });
-      updatedAssessment.parts![partIndex].items![questionIndex].mtfAnswers!.push(
-        { leftAnswer: { contentType: "text", key: "" }, rightAnswer: { contentType: "text", key: "" } }
-      );
+      updatedAssessment.parts![partIndex].items![
+        questionIndex
+      ].leftOptions!.push({ contentType: "text", key: "" });
+      updatedAssessment.parts![partIndex].items![
+        questionIndex
+      ].rightOptions!.push({ contentType: "text", key: "" });
+      updatedAssessment.parts![partIndex].items![
+        questionIndex
+      ].mtfAnswers!.push({
+        leftAnswer: { contentType: "text", key: "" },
+        rightAnswer: { contentType: "text", key: "" },
+      });
       return updatedAssessment;
     });
   }
@@ -174,18 +221,22 @@ const AssessmentForm = ({
     partIndex: number,
     questionIndex: number,
     optionIndex: number,
-    left: boolean,
+    left: boolean
   ) {
     if (left) {
       setAssessments((prev) => {
         const updatedAssessment = { ...prev };
-        updatedAssessment.parts![partIndex].items![questionIndex].leftOptions![optionIndex].key = e.target.value;
+        updatedAssessment.parts![partIndex].items![questionIndex].leftOptions![
+          optionIndex
+        ].key = e.target.value;
         return updatedAssessment;
       });
     } else {
       setAssessments((prev) => {
         const updatedAssessment = { ...prev };
-        updatedAssessment.parts![partIndex].items![questionIndex].rightOptions![optionIndex].key = e.target.value;
+        updatedAssessment.parts![partIndex].items![questionIndex].rightOptions![
+          optionIndex
+        ].key = e.target.value;
         return updatedAssessment;
       });
     }
@@ -196,12 +247,16 @@ const AssessmentForm = ({
     partIndex: number,
     questionIndex: number,
     leftOptionIndex: number,
-    leftOption:string
+    leftOption: string
   ) {
     setAssessments((prev) => {
       const updatedAssessment = { ...prev };
-      updatedAssessment.parts![partIndex].items![questionIndex].mtfAnswers![leftOptionIndex].rightAnswer! = { contentType: "text", key: e.target.value };
-      updatedAssessment.parts![partIndex].items![questionIndex].mtfAnswers![leftOptionIndex].leftAnswer! = { contentType: "text", key: leftOption };
+      updatedAssessment.parts![partIndex].items![questionIndex].mtfAnswers![
+        leftOptionIndex
+      ].rightAnswer! = { contentType: "text", key: e.target.value };
+      updatedAssessment.parts![partIndex].items![questionIndex].mtfAnswers![
+        leftOptionIndex
+      ].leftAnswer! = { contentType: "text", key: leftOption };
       return updatedAssessment;
     });
   }
@@ -219,51 +274,68 @@ const AssessmentForm = ({
       instruction: part.instruction,
       description: part.description,
       time: part.time,
+      content: part.content,
+      policies: part.policies,
       items: part.items.map((item) => {
         const baseItem = {
           questionType: item.questionType,
           tag: "",
-          question: ""
+          question: [{ contentType: "text", key: "" }],
         };
 
         switch (item.questionType) {
           case "FIB":
             return {
               ...baseItem,
-              fibAnswers: []
+              fibAnswers: [],
             };
           case "MCQ":
             return {
               ...baseItem,
-              options: []
+              options: [],
             };
           case "MTF":
             return {
               ...baseItem,
               leftOptions: [],
               rightOptions: [],
-              mtfAnswers: []
+              mtfAnswers: [],
             };
           case "AudioQuestion":
             return baseItem;
           default:
             return baseItem;
         }
-      })
+      }),
     }));
-    console.log(partsAssessments);
     setAssessments((prev) => {
-      let updatedAssessment = { ...prev }
-      updatedAssessment.parts = partsAssessments
-      return updatedAssessment
-    })
+      let updatedAssessment = { ...prev };
+      updatedAssessment.parts = partsAssessments;
+      return updatedAssessment;
+    });
   }, [parts]);
 
+  const handleTagChange = (
+    e: ChangeEvent<HTMLInputElement>,
+    partIndex: number,
+    questionIndex: number
+  ) => {
+    setAssessments((prev) => {
+      let updatedAssessment = { ...prev };
+      updatedAssessment.parts![partIndex].items[questionIndex].tag =
+        e.target.value;
+      return updatedAssessment;
+    });
+  };
 
-  const handleSubmit = async()=>{
-    console.log(assessment)
-  }
-
+  const handleSubmit = async () => {
+    try {
+      console.log(assessment);
+      const res = await axios.post("/add-assessment", { assessment });
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <>
@@ -274,101 +346,138 @@ const AssessmentForm = ({
             label="Title"
             name="title"
             value={assessment.title}
-            onChange={(e) => setAssessments(prev => ({ ...prev, title: e.target.value }))}
+            onChange={(e) =>
+              setAssessments((prev) => ({ ...prev, title: e.target.value }))
+            }
           />
           <InputField
             label="Type"
             name="type"
             value={assessment.type}
-            onChange={(e) => setAssessments(prev => ({ ...prev, type: e.target.value }))}
+            onChange={(e) =>
+              setAssessments((prev) => ({ ...prev, type: e.target.value }))
+            }
           />
           <InputField
             label="Time Limit (minutes)"
             name="time"
             value={assessment.time}
-            onChange={(e) => setAssessments(prev => ({ ...prev, time: e.target.value }))}
+            onChange={(e) =>
+              setAssessments((prev) => ({ ...prev, time: e.target.value }))
+            }
           />
         </div>
         <div className="mb-4">
           <h3 className="text-xl font-bold">Parts</h3>
           <ul className="list-disc mt-2">
-            {assessment.parts && assessment.parts!.map((part, partIndex) => (
-              <div key={partIndex} className="mb-4 border border-neutral-200 p-4 rounded-lg">
-                <InputField
-                  label="Part Name"
-                  name="name"
-                  value={part.name}
-                  onChange={(e) => handlePartChange(e, partIndex)}
-                />
-                <InputField
-                  label="Instruction"
-                  name="instruction"
-                  value={part.instruction}
-                  onChange={(e) => handlePartChange(e, partIndex)}
-                />
-                <InputField
-                  label="Description"
-                  name="description"
-                  value={part.description}
-                  onChange={(e) => handlePartChange(e, partIndex)}
-                />
-                <InputField
-                  label="Time"
-                  name="time"
-                  value={part.time}
-                  onChange={(e) => handlePartChange(e, partIndex)}
-                />
-                <div>Items:</div>
-                {
-                  part.items.map((item, questionIndex) => {
+            {assessment.parts &&
+              assessment.parts!.map((part, partIndex) => (
+                <div
+                  key={partIndex}
+                  className="mb-4 border border-neutral-200 p-4 rounded-lg"
+                >
+                  <InputField
+                    label="Part Name"
+                    name="name"
+                    value={part.name}
+                    onChange={(e) => handlePartChange(e, partIndex)}
+                  />
+                  <InputField
+                    label="Instruction"
+                    name="instruction"
+                    value={part.instruction}
+                    onChange={(e) => handlePartChange(e, partIndex)}
+                  />
+                  <InputField
+                    label="Description"
+                    name="description"
+                    value={part.description}
+                    onChange={(e) => handlePartChange(e, partIndex)}
+                  />
+                  <InputField
+                    label="Time"
+                    name="time"
+                    value={part.time}
+                    onChange={(e) => handlePartChange(e, partIndex)}
+                  />
+                  {part.content.contentType === "text" ? (
+                    <InputField
+                      label="Paragraph"
+                      name="content"
+                      value={part.content.key}
+                      onChange={(e) => handlePartChange(e, partIndex)}
+                    />
+                  ) : null}
+                  <div>Items:</div>
+                  {part.items.map((item, questionIndex) => {
                     switch (item.questionType) {
                       case "AudioQuestion":
                         return (
-                          <div key={questionIndex}>
-                            Audio Question
-                          </div>
+                          <>
+                            
+                            <InputField
+                              label={`Audio Question `}
+                              name={"Audio Question"}
+                              value={item.question[0].key}
+                              onChange={(e) =>
+                                handleQuestionChange(
+                                  e,
+                                  partIndex,
+                                  questionIndex
+                                )
+                              }
+                            />
+                          </>
                         );
                       case "MCQ":
                         return (
                           <div key={questionIndex}>
                             <div className="flex justify-between">
-                              <p className="font-bold">{`Question ${questionIndex + 1} - MCQ  `}</p>
+                              <p className="font-bold">{`Question ${
+                                questionIndex + 1
+                              } - MCQ  `}</p>
                             </div>
                             <InputField
-                              label={`Enter MCQ Question`} name={"MCQ Question"} value={item.question}
-                              onChange={(e) => handleQuestionChange(
-                                e,
-                                partIndex,
-                                questionIndex
-                              )} />
+                              label={`Enter MCQ Question`}
+                              name={"MCQ Question"}
+                              value={item.question[0].key}
+                              onChange={(e) =>
+                                handleQuestionChange(
+                                  e,
+                                  partIndex,
+                                  questionIndex
+                                )
+                              }
+                            />
+                            <InputField
+                              label="Question Tag"
+                              name="question tag"
+                              value={item.tag}
+                              onChange={(e) =>
+                                handleTagChange(e, partIndex, questionIndex)
+                              }
+                            />
                             <div>
-                              {item.options && item.options!.map(
-                                (
-                                  option,
-                                  optionIndex,
-                                ) => {
+                              {item.options &&
+                                item.options!.map((option, optionIndex) => {
                                   return (
                                     <div
-                                      key={
-                                        optionIndex
-                                      }
+                                      key={optionIndex}
                                       className="flex justify-between items-center rounded-lg bg-neutral-300 mb-3"
                                     >
                                       <div className="mb-3">
                                         <input
                                           type="text"
-                                          value={
-                                            option.key.value
-                                          }
-                                          placeholder={`Option ${optionIndex + 1}`}
-                                          onChange={(
-                                            e,
-                                          ) =>
+                                          value={option.key.value}
+                                          placeholder={`Option ${
+                                            optionIndex + 1
+                                          }`}
+                                          onChange={(e) =>
                                             handleMCQOptionChange(
                                               e,
                                               partIndex,
                                               questionIndex,
-                                              optionIndex,
+                                              optionIndex
                                             )
                                           }
                                           className="px-2 pt-2 w-full rounded-lg bg-inherit outline-none"
@@ -376,17 +485,13 @@ const AssessmentForm = ({
                                       </div>
                                       <div className="flex mr-4">
                                         <ToggleButton
-                                          checked={
-                                            option.key.isAnswer
-                                          }
-                                          handleToggle={(
-                                            checked: boolean,
-                                          ) => {
+                                          checked={option.key.isAnswer}
+                                          handleToggle={(checked: boolean) => {
                                             handleMCQAnswers(
                                               partIndex,
                                               questionIndex,
                                               optionIndex,
-                                              checked,
+                                              checked
                                             );
                                           }}
                                           label="Mark as correct answer"
@@ -397,28 +502,25 @@ const AssessmentForm = ({
                                             removeMCQOption(
                                               partIndex,
                                               questionIndex,
-                                              optionIndex,
-                                            )
-                                          }
-                                          }
+                                              optionIndex
+                                            );
+                                          }}
                                         >
                                           X
                                         </div>
                                       </div>
                                     </div>
                                   );
-                                },
-                              )}
+                                })}
                               <div className="w-36 h-14">
                                 <button
                                   className="bg-primary-500 p-2 font-semibold text-neutral-100 rounded-xl"
                                   onClick={() =>
-                                    addMCQOption(
-                                      partIndex,
-                                      questionIndex,
-                                    )
+                                    addMCQOption(partIndex, questionIndex)
                                   }
-                                >+ Add Option</button>
+                                >
+                                  + Add Option
+                                </button>
                               </div>
                             </div>
                           </div>
@@ -428,190 +530,176 @@ const AssessmentForm = ({
                           <div key={questionIndex}>
                             <>
                               <div className="flex justify-between">
-                                <p className="font-bold">{`Question ${questionIndex + 1} - Match the Following `}</p>
+                                <p className="font-bold">{`Question ${
+                                  questionIndex + 1
+                                } - Match the Following `}</p>
                               </div>
-                              <InputField label={"Enter MTF Question"} name={"mtfQuestion"} value={item.question} onChange={(e) => { handleQuestionChange(e, partIndex, questionIndex) }}
+                              <InputField
+                                label={"Enter MTF Question"}
+                                name={"mtfQuestion"}
+                                value={item.question[0].key}
+                                onChange={(e) => {
+                                  handleQuestionChange(
+                                    e,
+                                    partIndex,
+                                    questionIndex
+                                  );
+                                }}
+                              />
+                              <InputField
+                                label="Question Tag"
+                                name="question tag"
+                                value={item.tag}
+                                onChange={(e) =>
+                                  handleTagChange(e, partIndex, questionIndex)
+                                }
                               />
                               <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                  Add Options
-                                  (Column 1 )
-                                  {item.leftOptions && item.leftOptions!.map(
-                                    (
-                                      leftOption,
-                                      leftOptionIndex,
-                                    ) => {
-                                      return (
-                                        <div
-                                          key={
-                                            leftOptionIndex
-                                          }
-                                          className="rounded-lg bg-neutral-300 mb-3"
-                                        >
-                                          <input
-                                            type="text"
-                                            value={
-                                              leftOption.key
-                                            }
-                                            placeholder={`Option ${leftOptionIndex + 1}`}
-                                            className="outline-none  w-full p-2 bg-inherit"
-                                            onChange={(
-                                              e,
-                                            ) => {
-                                              handleMTFOptionsChange(
-                                                e,
-                                                partIndex,
-                                                questionIndex,
-                                                leftOptionIndex,
-                                                true,
-                                              );
-                                            }}
-                                          />
-                                        </div>
-                                      );
-                                    },
-                                  )}
+                                  Add Options (Column 1 )
+                                  {item.leftOptions &&
+                                    item.leftOptions!.map(
+                                      (leftOption, leftOptionIndex) => {
+                                        return (
+                                          <div
+                                            key={leftOptionIndex}
+                                            className="rounded-lg bg-neutral-300 mb-3"
+                                          >
+                                            <input
+                                              type="text"
+                                              value={leftOption.key}
+                                              placeholder={`Option ${
+                                                leftOptionIndex + 1
+                                              }`}
+                                              className="outline-none  w-full p-2 bg-inherit"
+                                              onChange={(e) => {
+                                                handleMTFOptionsChange(
+                                                  e,
+                                                  partIndex,
+                                                  questionIndex,
+                                                  leftOptionIndex,
+                                                  true
+                                                );
+                                              }}
+                                            />
+                                          </div>
+                                        );
+                                      }
+                                    )}
                                 </div>
                                 <div>
-                                  Add Options
-                                  (Column 2)
-                                  {item.rightOptions && item.rightOptions!.map(
-                                    (
-                                      rightOption,
-                                      rightOptionIndex,
-                                    ) => {
-                                      return (
-                                        <div
-                                          key={
-                                            rightOptionIndex
-                                          }
-                                          className="rounded-lg bg-neutral-300 mb-3"
-                                        >
-                                          <input
-                                            type="text"
-                                            value={
-                                              rightOption.key
-                                            }
-                                            placeholder={`Option ${rightOptionIndex + 1}`}
-                                            className="outline-none w-full p-2 bg-inherit"
-                                            onChange={(
-                                              e,
-                                            ) => {
-                                              handleMTFOptionsChange(
-                                                e,
-                                                partIndex,
-                                                questionIndex,
-                                                rightOptionIndex,
-                                                false,
-                                              );
-                                            }}
-                                          />
-                                        </div>
-                                      );
-                                    },
-                                  )}
+                                  Add Options (Column 2)
+                                  {item.rightOptions &&
+                                    item.rightOptions!.map(
+                                      (rightOption, rightOptionIndex) => {
+                                        return (
+                                          <div
+                                            key={rightOptionIndex}
+                                            className="rounded-lg bg-neutral-300 mb-3"
+                                          >
+                                            <input
+                                              type="text"
+                                              value={rightOption.key}
+                                              placeholder={`Option ${
+                                                rightOptionIndex + 1
+                                              }`}
+                                              className="outline-none w-full p-2 bg-inherit"
+                                              onChange={(e) => {
+                                                handleMTFOptionsChange(
+                                                  e,
+                                                  partIndex,
+                                                  questionIndex,
+                                                  rightOptionIndex,
+                                                  false
+                                                );
+                                              }}
+                                            />
+                                          </div>
+                                        );
+                                      }
+                                    )}
                                 </div>
                               </div>
                               <div className="w-36 h-14">
                                 <button
                                   className="bg-primary-500 p-2 font-semibold text-neutral-100 rounded-xl"
                                   onClick={() =>
-                                    addMTFOptions(
-                                      partIndex,
-                                      questionIndex,
-                                    )
+                                    addMTFOptions(partIndex, questionIndex)
                                   }
-                                >+ Add Option</button>
+                                >
+                                  + Add Option
+                                </button>
                               </div>
                               Correct Relationship
                               <div className="grid grid-cols-2 gap-4">
                                 <div>
                                   {item.leftOptions!.map(
-                                    (
-                                      leftOption,
-                                      leftOptionIndex,
-                                    ) => {
+                                    (leftOption, leftOptionIndex) => {
                                       return (
                                         <div
-                                          key={
-                                            leftOptionIndex
-                                          }
+                                          key={leftOptionIndex}
                                           className="rounded-lg bg-neutral-300 mb-3"
                                         >
                                           <input
                                             type="text"
-                                            value={
-                                              leftOption.key
-                                            }
-                                            placeholder={`Option ${leftOptionIndex + 1}`}
+                                            value={leftOption.key}
+                                            placeholder={`Option ${
+                                              leftOptionIndex + 1
+                                            }`}
                                             className="outline-none  w-full p-2 bg-inherit"
                                             disabled
                                           />
                                         </div>
                                       );
-                                    },
+                                    }
                                   )}
                                 </div>
                                 <div>
-                                  {item.leftOptions && item.leftOptions.map(
-                                    (
-                                      leftOption,
-                                      leftOptionIndex,
-                                    ) => {
-                                      return (
-                                        <div
-                                          key={
-                                            leftOptionIndex
-                                          }
-                                          className="rounded-lg bg-neutral-300 mb-3 h-10"
-                                        >
-                                          <select
-                                            value={
-                                              item.mtfAnswers![leftOptionIndex].rightAnswer!.key
-                                            }
-                                            className="p-2 w-full bg-inherit"
-                                            onChange={(
-                                              e,
-                                            ) => {
-                                              handleMTFAnswers(
-                                                e,
-                                                partIndex,
-                                                questionIndex,
-                                                leftOptionIndex,
-                                                leftOption.key
-                                              );
-                                            }}
+                                  {item.leftOptions &&
+                                    item.leftOptions.map(
+                                      (leftOption, leftOptionIndex) => {
+                                        return (
+                                          <div
+                                            key={leftOptionIndex}
+                                            className="rounded-lg bg-neutral-300 mb-3 h-10"
                                           >
-                                            <option value="">
-                                              Select
-                                              Answer
-                                            </option>
-                                            {item.rightOptions!.map(
-                                              (
-                                                rightOption,
-                                                ind,
-                                              ) => {
-                                                return (
-                                                  <option
-                                                    key={
-                                                      ind
-                                                    }
-                                                    value={
-                                                      rightOption.key
-                                                    }
-                                                  >
-                                                    {
-                                                      rightOption.key
-                                                    }
-                                                  </option>
+                                            <select
+                                              value={
+                                                item.mtfAnswers![
+                                                  leftOptionIndex
+                                                ].rightAnswer!.key
+                                              }
+                                              className="p-2 w-full bg-inherit"
+                                              onChange={(e) => {
+                                                handleMTFAnswers(
+                                                  e,
+                                                  partIndex,
+                                                  questionIndex,
+                                                  leftOptionIndex,
+                                                  leftOption.key
                                                 );
-                                              },
-                                            )}
-                                          </select>
-                                        </div>
-                                      );
-                                    },
-                                  )}
+                                              }}
+                                            >
+                                              <option value="">
+                                                Select Answer
+                                              </option>
+                                              {item.rightOptions!.map(
+                                                (rightOption, ind) => {
+                                                  return (
+                                                    <option
+                                                      key={ind}
+                                                      value={rightOption.key}
+                                                    >
+                                                      {rightOption.key}
+                                                    </option>
+                                                  );
+                                                }
+                                              )}
+                                            </select>
+                                          </div>
+                                        );
+                                      }
+                                    )}
                                 </div>
                               </div>
                             </>
@@ -620,33 +708,64 @@ const AssessmentForm = ({
                       case "FIB":
                         return (
                           <div key={questionIndex}>
-                            <p className="font-bold">{`Question ${questionIndex + 1} - Fill In The Blanks `}</p>
+                            <p className="font-bold">{`Question ${
+                              questionIndex + 1
+                            } - Fill In The Blanks `}</p>
                             <InputField
                               label="Add FIB Question"
                               name={"FIB Question"}
-                              value={item.question}
-                              onChange={(e) => { handleFIBQuestionChange(e, partIndex, questionIndex) }}
+                              value={item.question[0].key}
+                              onChange={(e) => {
+                                handleFIBQuestionChange(
+                                  e,
+                                  partIndex,
+                                  questionIndex
+                                );
+                              }}
                             />
-                            {
-                              item.fibAnswers!.map((fibAnswer, answerIndex) => {
-                                return <>
-                                  <InputField label={`Enter Blank ${answerIndex + 1}`} name={`Blank ${answerIndex + 1}`} value={fibAnswer.key} onChange={(e) => { handleFIBAnswersChange(e, partIndex, questionIndex, answerIndex) }} />
+                            <InputField
+                              label="Question Tag"
+                              name="question tag"
+                              value={item.tag}
+                              onChange={(e) =>
+                                handleTagChange(e, partIndex, questionIndex)
+                              }
+                            />
+                            {item.fibAnswers!.map((fibAnswer, answerIndex) => {
+                              return (
+                                <>
+                                  <InputField
+                                    label={`Enter Blank ${answerIndex + 1}`}
+                                    name={`Blank ${answerIndex + 1}`}
+                                    value={fibAnswer.key}
+                                    onChange={(e) => {
+                                      handleFIBAnswersChange(
+                                        e,
+                                        partIndex,
+                                        questionIndex,
+                                        answerIndex
+                                      );
+                                    }}
+                                  />
                                 </>
-                              })
-                            }
+                              );
+                            })}
                           </div>
                         );
                       default:
                         return null;
                     }
                   })}
-              </div>
-            ))}
+                </div>
+              ))}
           </ul>
         </div>
       </div>
       <div className="fixed bottom-0 w-full flex justify-end border-t p-2 z-0 bg-white">
-        <button className="z-0 flex items-center mr-10 border p-2 rounded-xl bg-primary-500 text-neutral-100 font-semibold" onClick={handleSubmit}>
+        <button
+          className="z-0 flex items-center mr-10 border p-2 rounded-xl bg-primary-500 text-neutral-100 font-semibold"
+          onClick={handleSubmit}
+        >
           Create Assessment
         </button>
       </div>

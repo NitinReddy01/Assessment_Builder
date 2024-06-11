@@ -19,8 +19,8 @@ export interface Parts {
     grade: {
       questionType: string;
       weightage: number;
-    };
-  }[];
+    }[];
+  };
   items: {
     questionType: string,
     questionId?:(FIB | MCQ | MTF | AudioQuestion)
@@ -51,11 +51,9 @@ function CreateTemplate() {
       contentType: 'text',
       key: ''
     },
-    policies: [
-      { grade: { questionType: 'FIB', weightage: 0 } },
-      { grade: { questionType: 'MCQ', weightage: 0 } },
-      { grade: { questionType: 'MTF', weightage: 0 } },
-    ],
+    policies: {
+      grade: [{ questionType: 'FIB', weightage: 0 }, {questionType: 'MCQ', weightage: 0 }, {questionType: 'MTF', weightage: 0 }] 
+    },
     items: []
   });
 
@@ -92,14 +90,8 @@ function CreateTemplate() {
     const index = name === 'FIB' ? 0 : name === 'MCQ' ? 1 : 2;
 
     setNewPart((prev) => {
-      const updatedPolicies = [...prev.policies];
-      updatedPolicies[index] = {
-        ...updatedPolicies[index],
-        grade: {
-          ...updatedPolicies[index].grade,
-          weightage: Number(value),
-        },
-      };
+      const updatedPolicies = {...prev.policies};
+      updatedPolicies.grade[index].weightage = Number(value);
       return {
         ...prev,
         policies: updatedPolicies,
@@ -121,11 +113,9 @@ function CreateTemplate() {
         contentType: 'text',
         key: ''
       },
-      policies: [
-        { grade: { questionType: 'FIB', weightage: 0 } },
-        { grade: { questionType: 'MCQ', weightage: 0 } },
-        { grade: { questionType: 'MTF', weightage: 0 } },
-      ],
+      policies: {
+        grade: [{ questionType: 'FIB', weightage: 0 }, {questionType: 'MCQ', weightage: 0 }, {questionType: 'MTF', weightage: 0 }]
+      },
       items: []
     });
     setIsOpen(false);
@@ -157,7 +147,6 @@ function CreateTemplate() {
         template
       })
       alert("Template Created")
-      console.log(template)
       navigate(-1);
     } catch (error) {
       console.log(error);
@@ -255,7 +244,7 @@ function CreateTemplate() {
                           <input
                             type="number"
                             name={"FIB"}
-                            value={newPart.policies[0].grade.weightage}
+                            value={newPart.policies.grade[0].weightage}
                             placeholder={`Enter weightage for FIB`}
                             onChange={handlePartPolicy}
                             className="p-2 border rounded-r-lg mb-1"
@@ -263,7 +252,7 @@ function CreateTemplate() {
                           <input
                             type="number"
                             name={"MCQ"}
-                            value={newPart.policies[1].grade.weightage}
+                            value={newPart.policies.grade[1].weightage}
                             placeholder={`Enter weightage for MCQ`}
                             onChange={handlePartPolicy}
                             className="p-2 border rounded-r-lg mb-1"
@@ -271,7 +260,7 @@ function CreateTemplate() {
                           <input
                             type="number"
                             name={"MTF"}
-                            value={newPart.policies[2].grade.weightage}
+                            value={newPart.policies.grade[2].weightage}
                             placeholder={`Enter weightage for MTF`}
                             onChange={handlePartPolicy}
                             className="p-2 border rounded-r-lg mb-1"

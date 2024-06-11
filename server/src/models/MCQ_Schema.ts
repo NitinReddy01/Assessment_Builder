@@ -2,7 +2,7 @@ import mongoose, { Document } from "mongoose";
 import { QuesitonType } from "./FIB_Schema";
 
 export interface IMCQ extends Document {
-    type:string;
+    questionType:string;
     question: QuesitonType[];
     options: QuesitonType[];
     answers: QuesitonType[];
@@ -29,7 +29,7 @@ const mcqSchema = new mongoose.Schema<IMCQ>({
         type: String,
         trim: true,
     },
-    type: {
+    questionType: {
         type: String,
         required:true,
         trim: true,

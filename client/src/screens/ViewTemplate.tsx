@@ -87,7 +87,7 @@ export const PartsList = ({ template }: { template: Template }) => {
               </div>
               <div>
                 <h4 className="text-lg font-medium mt-4 mb-2">Policies:</h4>
-                {part.policies && part.policies.length > 0 ? (
+                {part.policies && part.policies.grade.length > 0 ? (
                   <ul className="list-disc list-inside ml-4">
                     <li>
                       <div>
@@ -95,11 +95,11 @@ export const PartsList = ({ template }: { template: Template }) => {
                         <span>weightage</span>
                       </div>
                     </li>
-                    {part.policies.map((policy, i) => (
+                    {part.policies.grade.map((policy, i) => (
                       <li key={i}>
                         <div>
-                          <span>{policy.grade.questionType}</span>
-                          <span>{policy.grade.weightage}</span>
+                          <span>{policy.questionType}</span>
+                          <span>{policy.weightage}</span>
                         </div>
                       </li>
                     ))}

@@ -15,7 +15,7 @@ export class AudioQuestionItem{
     async create(){
         const audioQuestion = await AudioQuestion.create({
             question:this.question,
-            type:this.type,
+            questionType:this.type,
             time:this.time,
         })
         return String(audioQuestion._id);

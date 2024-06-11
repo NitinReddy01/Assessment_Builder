@@ -13,8 +13,8 @@ const DisplayPart = ({
       grade: {
         questionType: string;
         weightage: number;
-      };
-    }[];
+      }[];
+    };
   }) => {
     return (
       <div>
@@ -24,10 +24,10 @@ const DisplayPart = ({
         <div>Part Time: {time}</div>
         <div>Part Policy:</div>
         <div>
-          {policy.map((policyIndividual, index) => (
+          {policy.grade.map((policyIndividual, index) => (
             <div key={index} className="grid grid-cols-8 gap-4">
-              <div>Question Type: {policyIndividual.grade.questionType}</div>
-              <div>Weightage: {policyIndividual.grade.weightage}</div>
+              <div>Question Type: {policyIndividual.questionType}</div>
+              <div>Weightage: {policyIndividual.weightage}</div>
             </div>
           ))}
         </div>

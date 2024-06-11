@@ -10,7 +10,7 @@ export interface IFIB extends Document {
     answers: QuesitonType[];
     time: string;
     tag:string;
-    type:string;
+    questionType:string;
 }
 
 const fibSchema = new mongoose.Schema<IFIB>({
@@ -31,7 +31,7 @@ const fibSchema = new mongoose.Schema<IFIB>({
         type: String,
         trim: true,
     },
-    type: {
+    questionType: {
         type: String,
         required:true,
         trim: true,

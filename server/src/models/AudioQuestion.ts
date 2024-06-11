@@ -4,10 +4,10 @@ import { QuesitonType } from "./FIB_Schema";
 export interface IAudioQuestion{
     question:QuesitonType[];
     time:string;
-    type:string;
+    questionType:string;
 }
 
-const audioQuestionSchema = new mongoose.Schema({
+const audioQuestionSchema = new mongoose.Schema<IAudioQuestion>({
     question: {
         type:[{
         contentType:{
@@ -25,12 +25,12 @@ const audioQuestionSchema = new mongoose.Schema({
         type: String,
         trim: true,
     },
-    type: {
+    questionType: {
         type: String,
         required:true,
         trim: true,
     }
 });
 
-const AudioQuestion = mongoose.model("AudioQuestion",audioQuestionSchema);
+const AudioQuestion = mongoose.model<IAudioQuestion>("AudioQuestion",audioQuestionSchema);
 export default AudioQuestion;

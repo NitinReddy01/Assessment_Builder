@@ -38,7 +38,7 @@ export default function CreateAssessment() {
         const getTemplate = async ()=>{
             try {
                 const res = await axios.get(`/template/${template}`);
-                console.log(res.data);
+                console.log(res.data.template.parts);
                 setTime(res.data.template.time);
                 setParts(res.data.template.parts);
             } catch (error) {

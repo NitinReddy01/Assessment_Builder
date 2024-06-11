@@ -11,7 +11,7 @@ export interface IMTF extends Document {
     }[];
     time:string;
     tag?:string;
-    type:string;
+    questionType:string;
 }
 
 const mtfSchema = new mongoose.Schema<IMTF>({
@@ -32,7 +32,7 @@ const mtfSchema = new mongoose.Schema<IMTF>({
         type: String,
         trim: true,
     },
-    type: {
+    questionType: {
         type: String,
         required:true,
         trim: true,
