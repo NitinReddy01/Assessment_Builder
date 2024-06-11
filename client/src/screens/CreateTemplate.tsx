@@ -151,10 +151,10 @@ function CreateTemplate() {
 
   const handleSave = async () => {
     try {
-      // await axios.post('/add-template', {
-      //   template
-      // })
-      // alert("Template Created")
+      await axios.post('/add-template', {
+        template
+      })
+      alert("Template Created")
       console.log(template)
       navigate(-1);
     } catch (error) {
