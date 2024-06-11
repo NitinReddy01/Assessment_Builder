@@ -9,14 +9,17 @@ import AudioQuestion from "../models/AudioQuestion";
 
 const assessmentRouter = Router();
 
+// TODO: need to do input validaton for all these routes 
+
 assessmentRouter.post('/add-assessment', async (req, res) => {
     try {
         const type:string = req.body.type;
         const title:string = req.body.title;
         const assessment:AssessmentTemplate  = req.body.assessment;
         const time = req.body.time;
+        const templateType = req.body.templateType;
         const newAssessment = new AssessmentBuilder();
-        const id = await newAssessment.createAssessment(title, assessment, type, time);
+        const id = await newAssessment.createAssessment(title, assessment, type, time, templateType);
         res.status(201).json({ message: "Assessment Created", id });
     } catch (error) {
         console.log(error);
@@ -44,7 +47,6 @@ assessmentRouter.get('/assessment/:id', async (req, res) => {
             return res.status(404).json({ message: "Assessment not found" });
         }
 
-        // Function to populate items based on question type
         const populateItems = async (parts: any[]) => {
             for (const part of parts) {
                 for (const item of part.items) {

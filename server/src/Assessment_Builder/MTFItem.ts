@@ -42,6 +42,8 @@ export class MTFItem {
         });
         return String(mtf._id);
     }
+    
+    // TODO: need to do evaluation for different media types if needed in the future
     evaluate(studentAnswers: { leftAnswer: QuesitonType; rightAnswer: QuesitonType[] }[], weightage: string): number {
         const weight = Number(weightage);
         if (isNaN(weight)) {

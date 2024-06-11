@@ -1,5 +1,4 @@
 import InputField from "./InputField";
-
 export interface QuesitonType {
   contentType: string;
   key: string;
@@ -27,8 +26,8 @@ export interface MTF {
   leftOptions: QuesitonType[];
   rightOptions: QuesitonType[];
   answers: {
-    leftAnswer: QuesitonType;
-    rightAnswer: QuesitonType[];
+    leftOption: QuesitonType;
+    rightOptions: QuesitonType[];
   }[];
   time: string;
   tag?: string;
@@ -47,7 +46,7 @@ interface ViewFIBQuestionProps {
   question: QuesitonType[];
   time: string;
   answers: QuesitonType[];
-  tag: string;
+  tag?: string;
   questionIndex: number;
 }
 
@@ -103,17 +102,17 @@ export const ViewFIBQuestion = ({
 
 interface ViewMCQQuestionProps {
   question: QuesitonType[];
+  options: QuesitonType[];
   time: string;
-  type: string;
   answers: QuesitonType[];
-  tag: string;
+  tag?: string;
   questionIndex: number;
 }
 
 export const ViewMCQQuestion = ({
   question,
+  options,
   time,
-  type,
   answers,
   tag,
   questionIndex,
@@ -124,7 +123,7 @@ export const ViewMCQQuestion = ({
         <p className="font-bold">{`Question ${questionIndex + 1} - MCQ `}</p>
       </div>
       <>
-        <div>tag - {tag}</div>
+        { tag && <div>tag - {tag}</div>}
         <div>Time - {time}</div>
         {question.map((q, index) => {
           if (q.contentType === "text") {
@@ -141,8 +140,8 @@ export const ViewMCQQuestion = ({
           }
         })}
         <div>
-          {type === "MCQ" &&
-            question.map((q, index) => {
+          {
+            options.map((q, index) => {
               if (q.contentType === "text") {
                 return (
                   <div key={index}>
@@ -183,8 +182,8 @@ interface ViewMTFQuestionProps {
   time: string;
   leftOptions: QuesitonType[];
   rightOptions: QuesitonType[];
-  answers: { _id: string; leftOption: string[]; rightOptions: string[] }[];
-  tag: string;
+  answers: { leftOption: QuesitonType; rightOptions: QuesitonType[] }[];
+  tag?: string;
   questionIndex: number;
 }
 
@@ -203,7 +202,7 @@ export const ViewMTFQuestion = ({
         <p className="font-bold">{`Question ${questionIndex + 1} - MTF `}</p>
       </div>
       <>
-        <div>tag - {tag}</div>
+      { tag && <div>tag - {tag}</div>}
         <div>Time - {time}</div>
         {question.map((q, index) => (
           <div key={index}>
@@ -243,25 +242,15 @@ export const ViewMTFQuestion = ({
         <div>
           {answers.map((ans, index) => (
             <div key={index}>
-              <p>
-                {ans.leftOption.map((leftOption, i) => (
-                  <span key={i}>
-                    {
-                      leftOptions.find((option) => option.key === leftOption)
-                        ?.key
-                    }{" "}
-                  </span>
-                ))}
-                matches{" "}
-                {ans.rightOptions.map((rightOption, i) => (
-                  <span key={i}>
-                    {
-                      rightOptions.find((option) => option.key === rightOption)
-                        ?.key
-                    }{" "}
-                  </span>
-                ))}
-              </p>
+              <div>
+                {ans.leftOption.contentType==='text'?<>
+                    <p  >{ans.leftOption.key } matches {ans.rightOptions.map((rightOption,ind)=>{
+                        return <span key={`right${ind}`}>
+                            {rightOption.contentType==='text'?rightOption.key:null}
+                        </span>
+                    })} </p>
+                </>:null}
+              </div>
             </div>
           ))}
         </div>

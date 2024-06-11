@@ -3,6 +3,7 @@ import InputField from '../components/InputField';
 import DisplayPart from '../components/DisplayPart';
 import { useNavigate } from 'react-router-dom';
 import axios from '../api/axios';
+import { AudioQuestion, FIB, MCQ, MTF } from '../components/Questions';
 
 export interface Parts {
   _id?:string
@@ -21,7 +22,8 @@ export interface Parts {
     };
   }[];
   items: {
-    questionType: string
+    questionType: string,
+    questionId?:(FIB | MCQ | MTF | AudioQuestion)
   }[]
 }
 

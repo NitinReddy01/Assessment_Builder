@@ -5,6 +5,8 @@ import { IParts } from "../models/TemplateParts_Schema";
 
 const templateRouter = Router();
 
+// TODO: need to do input validation for all routes
+
 templateRouter.post('/add-template',async (req,res)=>{
     try {
         if(!req.body.template){

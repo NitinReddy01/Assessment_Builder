@@ -28,6 +28,8 @@ export class FIBItem{
         return String(fib._id);
     }
 
+    // TODO: need to do evaluation for different media types if needed in the future
+
     evaluate(studentAnswer:QuesitonType[],weightage:string){
         const weight = Number(weightage);
         if (isNaN(weight)) {

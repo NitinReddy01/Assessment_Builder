@@ -67,7 +67,7 @@ const mtfSchema = new mongoose.Schema<IMTF>({
     answers: [
         {
             leftOption: {
-                type:[{
+                type:{
                 contentType:{
                     type:String,
                     required:true
@@ -76,8 +76,7 @@ const mtfSchema = new mongoose.Schema<IMTF>({
                     type:String,
                     required:true
                 }
-                }],
-                default:[]
+                },
             },
             rightOptions: {
                 type:[{

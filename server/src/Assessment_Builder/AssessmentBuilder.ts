@@ -75,6 +75,7 @@ export class AssessmentBuilder{
     //     }
     // }
 
+    // FIXME: need to handle duplicate of templates (type must be unique)
     async createTemplate(template:ITemplate){
         let partsId  = await Promise.all(template.parts.map(async (part)=>{
             const itemIds  = part.items.map(item=>{
@@ -99,8 +100,8 @@ export class AssessmentBuilder{
         return String(temp._id);
     }
 
-    async createAssessment(title:string,assessment:AssessmentTemplate,type:string,time:string){
-        console.log(assessment);
+    // FIXME: need to handle duplicate of assessments ( title must be unique )
+    async createAssessment(title:string,assessment:AssessmentTemplate,type:string,time:string,templateType:string){
             let partIds = await Promise.all(assessment.parts.map(async (part)=>{
                 const itemIds  = await Promise.all(part.items.map(async (item)=>{
                     if(item.type==="FIB") {
@@ -139,7 +140,8 @@ export class AssessmentBuilder{
                 type,
                 title,
                 time,
-                parts:partIds
+                parts:partIds,
+                templateType
             })
             return String(newAssessment._id);
     }
