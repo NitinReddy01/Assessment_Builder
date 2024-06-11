@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { AssessmentBuilder, ITemplate } from "../Assessment_Builder/AssessmentBuilder";
+import { AssessmentBuilder, AssessmentTemplate, } from "../Assessment_Builder/AssessmentBuilder";
 import Assessment from "../models/Assessment_Schema";
 
 const assessmentRouter = Router();
@@ -8,7 +8,7 @@ assessmentRouter.post('/add-assessment',async (req,res) =>{
     try {
         const type:string = req.body.type;
         const title:string = req.body.title;
-        const assessment:ITemplate  = req.body.assessment;
+        const assessment:AssessmentTemplate  = req.body.assessment;
         const time = req.body.time;
         const newAssessment = new AssessmentBuilder();
         const id = await newAssessment.createAssessment(title,assessment,type,time)
@@ -22,7 +22,6 @@ assessmentRouter.post('/add-assessment',async (req,res) =>{
 assessmentRouter.get('/all-assessments',async (req,res)=>{
     try {
         const assessments = await Assessment.find({}).select("type title templateType");
-        console.log(assessments);
         res.status(200).json({assessments});
     } catch (error) {
         console.log(error);
