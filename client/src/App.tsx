@@ -5,6 +5,7 @@ import Assessments from './screens/Assessments';
 import CreateTemplate from './screens/CreateTemplate';
 import Templates from './screens/Templates';
 import CreateAssessment from './screens/CreateAssessment';
+import ViewTemplate from './screens/ViewTemplate';
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Route path='/' element={<Assessments/>} />
         <Route path='/templates' element={<Templates/>} />
         <Route path='/create-template' element={<CreateTemplate/>} />
+        <Route path='/view-template/:id' element={<ViewTemplate/>} />
         <Route path='/create-assessment/:template' element={<CreateAssessment/>} />
       </Route>
     </Routes>

@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from '../api/axios';
 
 export interface Parts {
+  _id?:string
   name: string;
   instruction: string;
   description: string;
@@ -19,6 +20,9 @@ export interface Parts {
       weightage: number;
     };
   }[];
+  items: {
+    questionType: string
+  }[]
 }
 
 export interface Template {
@@ -49,8 +53,8 @@ function CreateTemplate() {
       { grade: { questionType: 'FIB', weightage: 0 } },
       { grade: { questionType: 'MCQ', weightage: 0 } },
       { grade: { questionType: 'MTF', weightage: 0 } },
-      { grade: { questionType: 'Audio', weightage: -1 } },
     ],
+    items: []
   });
 
   const handleViewPart = (index: number) => {
@@ -101,23 +105,6 @@ function CreateTemplate() {
     });
   };
 
-  const handlePartAudioPolicy = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewPart((prev) => {
-      const updatedPolicies = [...prev.policies];
-      updatedPolicies[3] = {
-        ...updatedPolicies[3],
-        grade: {
-          ...updatedPolicies[3].grade,
-          weightage: -1*updatedPolicies[3].grade.weightage,
-        },
-      };
-      return {
-        ...prev,
-        policies: updatedPolicies,
-      };
-    });
-  };
-
   const addNewPart = () => {
     setTemplate((prev) => ({
       ...prev,
@@ -137,17 +124,39 @@ function CreateTemplate() {
         { grade: { questionType: 'MCQ', weightage: 0 } },
         { grade: { questionType: 'MTF', weightage: 0 } },
       ],
+      items: []
     });
     setIsOpen(false);
   };
 
+  const handleAddItem = (questionType: string) => {
+    setNewPart((prev) => {
+      const updatedItems = [...prev.items, { questionType }];
+      return {
+        ...prev,
+        items: updatedItems, 
+      };
+    });
+  };
+
+  const handleRemoveItem = (index: number) => {
+    setNewPart((prev) => {
+      const updatedItems = prev.items.filter((_, i) => i !== index);
+      return {
+        ...prev,
+        items: updatedItems,
+      };
+    });
+  };
+
   const handleSave = async () => {
     try {
-      await axios.post('/add-template',{
-        template
-    })
-    alert("Template Created")
-    navigate(-1);
+      // await axios.post('/add-template', {
+      //   template
+      // })
+      // alert("Template Created")
+      console.log(template)
+      navigate(-1);
     } catch (error) {
       console.log(error);
       alert("Creation Failed")
@@ -193,8 +202,8 @@ function CreateTemplate() {
                 </div>
               ))}
             {isOpen && (
-              <div className="fixed inset-0 z-50 flex items-center justify-center overflow-auto bg-black bg-opacity-50">
-                <div className="relative bg-neutral-100 w-[90%] p-16 rounded-lg">
+              <div className="fixed inset-0 z-50 flex gap-4 items-center justify-center overflow-auto bg-black bg-opacity-50">
+                <div className="relative flex flex-col gap-4 bg-neutral-100 w-[90%] p-16 rounded-lg">
                   <div className="flex justify-between">
                     <h2 className="text-xl font-bold">Enter Part Details</h2>
                     <button onClick={closeDialog} className="text-gray-600 hover:text-gray-900">
@@ -218,17 +227,21 @@ function CreateTemplate() {
                       </select>
                     </div>
                   </div>
+                  <div className='grid grid-cols-4 gap-4'>
+                    <div className='border border-primary-500 p-2 hover:bg-primary-500 hover:text-neutral-100 hover:font-semibold border-dotted rounded-lg' onClick={() => { handleAddItem("AudioQuestion") }}>Add Audio Question</div>
+                    <div className='border border-primary-500 p-2 hover:bg-primary-500 hover:text-neutral-100 hover:font-semibold border-dotted rounded-lg' onClick={() => { handleAddItem("MCQ") }}>Add MCQ</div>
+                    <div className='border border-primary-500 p-2 hover:bg-primary-500 hover:text-neutral-100 hover:font-semibold border-dotted rounded-lg' onClick={() => { handleAddItem("FIB") }}>Add FIB</div>
+                    <div className='border border-primary-500 p-2 hover:bg-primary-500 hover:text-neutral-100 hover:font-semibold border-dotted rounded-lg' onClick={() => { handleAddItem("MTF") }}>Add MTF</div>
+                  </div>
+                  {
+                    newPart.items && newPart.items.map((item, index) => {
+                      return <div key={index}>
+                        <div className='flex gap-4'><span>{index + 1} . </span><span>{item.questionType}</span><span className='text-error-800 cursor-pointer font-bold' onClick={() => {handleRemoveItem(index)}}>X</span></div>
+                      </div>
+                    })
+                  }
                   <div className='grid grid-cols-2'>
                     <div>
-                      <div className='flex gap-4 items-center'>
-                        <div
-                          className={`p-2 ${newPart.policies[3].grade.weightage==1 ? "bg-primary-500" : "bg-neutral-500"} rounded-full`}
-                          onClick={() => {handlePartAudioPolicy}}
-                        >
-                          <div className={`p-1 bg-neutral-100 rounded-full`} />
-                        </div>
-                        <div className='my-4'>Audio Input Test<span className="text-error-800">*</span></div>
-                      </div>
                       <div className='my-4'>Policy<span className="text-error-800">*</span></div>
                       <div className='grid grid-cols-2'>
                         <div>
@@ -265,7 +278,7 @@ function CreateTemplate() {
                       </div>
                     </div>
                   </div>
-                  <div className="flex justify-end gap-4">
+                  <div className="bottom-0 absolute mb-2 flex items-end justify-end right-4 w-full gap-4">
                     <button onClick={closeDialog} className="px-4 py-2 border-2 border-primary-500 rounded-full">
                       Close
                     </button>
@@ -290,7 +303,7 @@ function CreateTemplate() {
           ) : null
         }
       </div>
-      <div className='bottom-0 fixed border w-full h-16 flex justify-end'>
+      <div className='bottom-0 left-0 fixed border w-full h-16 flex justify-end'>
         <button className='border-2 bg-primary-500 px-4 mt-2 mb-4 rounded-full flex items-center text-neutral-100' onClick={handleSave}>Save Template</button>
       </div>
     </div>
