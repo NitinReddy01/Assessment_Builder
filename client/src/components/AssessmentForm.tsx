@@ -55,6 +55,30 @@ const AssessmentForm = ({
   //     setParts(updatedParts);
   //   };
 
+  const addPart = ()=>{
+    setParts(prev=>{
+        let updatedParts = [...prev];
+        updatedParts.push({
+            name: '',
+            instruction: '',
+            description: '',
+            time: '',
+            content: {
+              contentType: 'text',
+              key: ''
+            },
+            policies: [
+              { grade: { questionType: 'FIB', weightage: 0 } },
+              { grade: { questionType: 'MCQ', weightage: 0 } },
+              { grade: { questionType: 'MTF', weightage: 0 } },
+              { grade: { questionType: 'Audio', weightage: -1 } },
+            ],
+            items:[]
+          })
+        return updatedParts;
+    })
+  }
+
   return (
     <div className="container mx-auto p-4">
       <h2 className="text-2xl font-bold mb-4">Create Assessment</h2>
@@ -161,12 +185,9 @@ const AssessmentForm = ({
               </div>
             </div>
           ))}
-                                          <div
-                                    className="text-center text-base  border-2 border-dashed border-primary-500 rounded-lg py-2 bg-primary-200 cursor-pointer"
-                                    
-                                >
-                                    + Add Part
-                                </div>
+          <div className="text-center w-36 text-base mt-4 border-2 border-dashed border-primary-500 rounded-lg py-2 bg-primary-200 cursor-pointer" onClick={addPart}>
+            + Add Part
+          </div>
         </ul>
       </div>
     </div>
