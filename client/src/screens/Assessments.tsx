@@ -20,7 +20,7 @@ export default function Assessments() {
   const [assessments, setAssessments] = useState<IAssessment[]>([]);
   const [templates, setTemplates] = useState<ITemplate[]>([]);
   const [isModelOpen, setIsModelOpen] = useState(false);
-  const [template, setTemplate] = useState("Select Template");
+  const [template, setTemplate] = useState("none");
 
   useEffect(() => {
     const getAssessments = async () => {
@@ -45,6 +45,7 @@ export default function Assessments() {
   return (
     <>
       <div>
+
       <div className="flex justify-between mb-4 bg-neutral-300 rounded-lg p-10">
         <div className="flex items-center font-bold text-xl">Assessments</div>
         <button
@@ -54,7 +55,6 @@ export default function Assessments() {
             + Create Assessment
           </button>
       </div>
-
         <div className="grid grid-cols-4 gap-4">
           { assessments &&  assessments.length === 0 ? (
             "No assessments created"
@@ -71,7 +71,6 @@ export default function Assessments() {
           )}
         </div>
       </div>
-
       {isModelOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center overflow-auto bg-black bg-opacity-50">
           <div className="bg-neutral-100 p-16 rounded-lg flex flex-col gap-4">
@@ -83,7 +82,7 @@ export default function Assessments() {
                 onChange={(e) => setTemplate(e.target.value)}
                 value={template}
               >
-                <option value={"none"}>None</option>
+                <option value={"none"}>Select Template</option>
                 {templates.map((template) => {
                   return (
                     <option key={template._id} value={template._id}>
@@ -98,12 +97,12 @@ export default function Assessments() {
             </div>
             <div className="flex justify-end gap-4">
               <button
-                className=" p-2 border-2 border-primary-500 rounded-full"
+                className=" p-2 border-2 w-28 border-primary-500 rounded-full"
                 onClick={() => setIsModelOpen(false)}
               >
                 Close
               </button>
-              <Link to={`/create-assessment/${template}`} className="px-4 py-2 font-semibold text-white bg-primary-500 rounded-full hover:bg-primary-800"  >
+              <Link to={template!=="none" ? `/create-assessment/${template}` : ''} className="px-4 py-2 font-semibold text-white bg-primary-500 rounded-full hover:bg-primary-800"  >
                 Create Assessment
               </Link>
             </div>
