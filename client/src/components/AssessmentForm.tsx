@@ -1,7 +1,9 @@
+
 import React, { ChangeEvent, useEffect, useState } from "react";
 import { AssessmentParts } from "../screens/CreateAssessment";
 import InputField from "./InputField";
 import ToggleButton from "./buttons/ToggleButton";
+
 
 interface AssessmentFormProps {
   template: string;
@@ -60,6 +62,7 @@ const AssessmentForm = ({
   time,
   type,
 }: AssessmentFormProps) => {
+
   const handlePartChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     partIndex: number

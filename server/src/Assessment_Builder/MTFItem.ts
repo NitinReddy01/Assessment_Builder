@@ -37,10 +37,13 @@ export class MTFItem {
             rightOptions: this.rightOptions,
             answers: this.answers,
             time: this.time,
-            tag: this.tag ?? ""
+            tag: this.tag ?? "",
+            type:this.type
         });
         return String(mtf._id);
     }
+    
+    // TODO: need to do evaluation for different media types if needed in the future
     evaluate(studentAnswers: { leftAnswer: QuesitonType; rightAnswer: QuesitonType[] }[], weightage: string): number {
         const weight = Number(weightage);
         if (isNaN(weight)) {
@@ -48,13 +51,13 @@ export class MTFItem {
         }
     
         for (const ans of this.answers) {
-            if (ans.leftAnswer.contentType === "string") {
+            if (ans.leftAnswer.contentType === "text") {
                 const matchingAnswer = studentAnswers.find(studAns => 
-                    studAns.leftAnswer.contentType === "string" &&
+                    studAns.leftAnswer.contentType === "text" &&
                     studAns.leftAnswer.key === ans.leftAnswer.key &&
                     ans.rightAnswer.every(rightAns => 
                         studAns.rightAnswer.some(studentRightAns => 
-                            studentRightAns.contentType === "string" && 
+                            studentRightAns.contentType === "text" && 
                             studentRightAns.key === rightAns.key
                         )
                     )

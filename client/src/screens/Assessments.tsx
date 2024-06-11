@@ -45,10 +45,16 @@ export default function Assessments() {
   return (
     <>
       <div>
-        <div className="flex justify-between mb-4 bg-neutral-300 rounded-lg p-10">
-          <div className="flex items-center font-bold text-xl">Assessments</div>
-          <div onClick={() => setIsModelOpen(true)} className="cursor-pointer bg-primary-500 text-neutral-100 font-bold h-10 flex items-center px-4 rounded-lg">+ Create Assessments</div>
-        </div>
+
+      <div className="flex justify-between mb-4 bg-neutral-300 rounded-lg p-10">
+        <div className="flex items-center font-bold text-xl">Assessments</div>
+        <button
+            className="px-4 py-2 font-semibold text-white bg-primary-500 rounded-lg hover:bg-primary-800"
+            onClick={() => setIsModelOpen(true)}
+          >
+            + Create Assessment
+          </button>
+      </div>
         <div className="grid grid-cols-4 gap-4">
           { assessments &&  assessments.length === 0 ? (
             "No assessments created"
@@ -103,8 +109,6 @@ export default function Assessments() {
           </div>
         </div>
       )}
-
-
     </>
   );
 }

@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 
 interface AssessmentCardProps{
     assessment:{    
@@ -9,9 +10,10 @@ interface AssessmentCardProps{
 }
 
 export default function AssessmentCard({assessment}:AssessmentCardProps) {
+  const navigate = useNavigate();
   return (
-    <div className="flex flex-col gap-4 border border-neutral-200 rounded-lg p-4 cursor-pointer" >
-      <div className="flex justify-between font-bold">
+    <div className="flex flex-col gap-4 border border-neutral-200 rounded-lg p-4" >
+      <div className="flex justify-between font-bold cursor-pointer" onClick={()=>navigate(`/view-assessment/${assessment._id}`)} >
         Title - {assessment.title}
       </div>
       <div>
