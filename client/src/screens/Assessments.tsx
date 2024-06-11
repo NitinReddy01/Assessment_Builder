@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import axios from "../api/axios";
 import AssessmentCard from "../components/AssessmentCard";
 import { Link } from "react-router-dom";
+import axios from "../api/axios";
 
 export interface IAssessment {
   _id: string;
@@ -36,7 +36,7 @@ export default function Assessments() {
       }
     };
     getAssessments();
-  }, [axios]);
+  }, []);
 
   if (loading) {
     return "Loading...";
@@ -54,11 +54,11 @@ export default function Assessments() {
           </button>
         </div>
         <div className="grid grid-cols-4 gap-4">
-          {assessments.length === 0 ? (
+          { assessments &&  assessments.length === 0 ? (
             "No assessments created"
           ) : (
             <>
-              {assessments.map((assessment) => {
+              { assessments && assessments.map((assessment) => {
                 return (
                   <div key={assessment._id}>
                     <AssessmentCard assessment={assessment} />

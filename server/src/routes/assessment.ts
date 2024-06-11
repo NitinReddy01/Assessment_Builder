@@ -22,6 +22,7 @@ assessmentRouter.post('/add-assessment',async (req,res) =>{
 assessmentRouter.get('/all-assessments',async (req,res)=>{
     try {
         const assessments = await Assessment.find({}).select("type title templateType");
+        console.log(assessments);
         res.status(200).json({assessments});
     } catch (error) {
         console.log(error);

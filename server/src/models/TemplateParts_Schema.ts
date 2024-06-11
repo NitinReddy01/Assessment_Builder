@@ -63,7 +63,7 @@ const partsSchema = new mongoose.Schema({
         questionType: {
             type: String,
             required: true,
-            enum: ["FIB", "MCQ", "MTF"],
+            enum: ["FIB", "MCQ", "MTF","AudioQuestion"],
         },
         questionId: {
             type: mongoose.Schema.Types.ObjectId,
