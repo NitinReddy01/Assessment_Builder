@@ -42,7 +42,9 @@ export default function Templates() {
           <div key={template._id} className="flex justify-between rounded-lg gap-4 border p-2">
             <div className="flex items-center text-lg font-bold">{template!.type}</div>
             <div>
-              <div className="flex gap-2 cursor-pointer font-semibold items-start"><img className="w-7 h-5" src={viewIcon}/><span className="flex items-start">view</span></div>
+              <div className="flex gap-2 cursor-pointer font-semibold items-start" onClick={()=>{
+                navigate(`/view-template/${template._id}`)
+              }}><img className="w-7 h-5" src={viewIcon}/><span className="flex items-start">view</span></div>
               <div className="flex gap-2 cursor-pointer font-semibold"><img className="w-7 h-5" src={editIcon}/><span>edit</span></div>
               <div className="flex gap-2 cursor-pointer font-semibold"><img className="w-7 h-5" src={deleteIcon}/><span className="text-error-800"> delete</span></div>
             </div>
