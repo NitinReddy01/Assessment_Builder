@@ -37,7 +37,8 @@ export class MTFItem {
             rightOptions: this.rightOptions,
             answers: this.answers,
             time: this.time,
-            tag: this.tag ?? ""
+            tag: this.tag ?? "",
+            type:this.type
         });
         return String(mtf._id);
     }

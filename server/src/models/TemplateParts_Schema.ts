@@ -69,7 +69,7 @@ const partsSchema = new mongoose.Schema({
         },
         questionId: {
             type: mongoose.Schema.Types.ObjectId,
-            refPath: "questions.questionType",
+            refPath: "items.questionType",
         },
     }]
 
