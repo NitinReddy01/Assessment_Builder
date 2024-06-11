@@ -39,7 +39,7 @@ export default function CreateAssessment() {
             try {
                 const res = await axios.get(`/template/${template}`);
                 console.log(res.data);
-                setTime(res.data.time);
+                setTime(res.data.template.time);
                 setParts(res.data.template.parts);
             } catch (error) {
                 console.log(error);
@@ -55,8 +55,8 @@ export default function CreateAssessment() {
     }
 
   return (
-    <div>
-      <AssessmentForm title={title} setTime={setTime} time ={time} setParts={setParts} setTitle={setTitle} type={type} setType={setType}  parts={parts}/>
+    <div className="w-full">
+      <AssessmentForm template={template!} title={title} setTime={setTime} time ={time} setParts={setParts} setTitle={setTitle} type={type} setType={setType}  parts={parts}/>
     </div> 
   )
 }
