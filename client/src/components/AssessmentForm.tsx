@@ -1,14 +1,7 @@
-import React, { useState } from "react";
-import {
-  Question,
-  FIB,
-  MCQ,
-  MTF,
-  AudioQuestion,
-} from "../components/Questions";
+import React from "react";
+import deleteIcon from "../assets/icons/deleteIcon.svg";
 import { AssessmentParts } from "../screens/CreateAssessment";
 import InputField from "./InputField";
-import deleteIcon from "../assets/icons/deleteIcon.svg";
 
 interface AssessmentFormProps {
   title: string;
@@ -31,10 +24,6 @@ const AssessmentForm = ({
   type,
   setType,
 }: AssessmentFormProps) => {
-  const [selectedPartIndex, setSelectedPartIndex] = useState(0);
-  const [currentPart, setCurrentPart] = useState<AssessmentParts>(
-    parts[0] || []
-  );
 
   const handlePartChange = (
     e: React.ChangeEvent<HTMLInputElement>,

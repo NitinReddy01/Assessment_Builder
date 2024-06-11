@@ -43,8 +43,8 @@ export class MCQItem {
             throw new Error("Invalid weightage value");
         }
         for (const ans of this.answers) {
-            if (ans.contentType === "string") {
-                const matchingAnswer = studentAnswer.find(studAns => studAns.contentType === "string" && studAns.key === ans.key);
+            if (ans.contentType === "text") {
+                const matchingAnswer = studentAnswer.find(studAns => studAns.contentType === "text" && studAns.key === ans.key);
                 if (!matchingAnswer) {
                     return 0;
                 }

@@ -70,7 +70,6 @@ export default function Assessments() {
         </div>
       </div>
 
-
       {isModelOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center overflow-auto bg-black bg-opacity-50">
           <div className="bg-neutral-100 p-16 rounded-lg flex flex-col gap-4">

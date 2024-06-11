@@ -100,6 +100,7 @@ export class AssessmentBuilder{
     }
 
     async createAssessment(title:string,assessment:AssessmentTemplate,type:string,time:string){
+        console.log(assessment);
             let partIds = await Promise.all(assessment.parts.map(async (part)=>{
                 const itemIds  = await Promise.all(part.items.map(async (item)=>{
                     if(item.type==="FIB") {

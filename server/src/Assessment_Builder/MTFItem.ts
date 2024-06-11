@@ -48,13 +48,13 @@ export class MTFItem {
         }
     
         for (const ans of this.answers) {
-            if (ans.leftAnswer.contentType === "string") {
+            if (ans.leftAnswer.contentType === "text") {
                 const matchingAnswer = studentAnswers.find(studAns => 
-                    studAns.leftAnswer.contentType === "string" &&
+                    studAns.leftAnswer.contentType === "text" &&
                     studAns.leftAnswer.key === ans.leftAnswer.key &&
                     ans.rightAnswer.every(rightAns => 
                         studAns.rightAnswer.some(studentRightAns => 
-                            studentRightAns.contentType === "string" && 
+                            studentRightAns.contentType === "text" && 
                             studentRightAns.key === rightAns.key
                         )
                     )
