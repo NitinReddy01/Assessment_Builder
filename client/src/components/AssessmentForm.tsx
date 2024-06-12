@@ -717,7 +717,7 @@ const AssessmentForm = ({
                               questionIndex + 1
                             } - Fill In The Blanks `}</p>
                             <InputField
-                              label="Add FIB Question"
+                              label="Add FIB Question (__ represents blank)"
                               name={"FIB Question"}
                               value={item.question[0].key}
                               onChange={(e) => {

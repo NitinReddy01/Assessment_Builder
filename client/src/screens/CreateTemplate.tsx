@@ -28,6 +28,7 @@ export interface Parts {
 }
 
 export interface Template {
+  title?:string
   type: string;
   time?: string;
   parts?: Parts[];

@@ -14,6 +14,7 @@ import {
 export const PartsList = ({ template }: { template: Template }) => {
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
+      <h1 className="text-2xl font-bold mb-4">{template.title}</h1>
       <h1 className="text-2xl font-bold mb-4">{template.type}</h1>
       <p className="text-lg mb-6">
         <strong>Time:</strong> {template.time}
@@ -33,7 +34,7 @@ export const PartsList = ({ template }: { template: Template }) => {
                 <strong>Time:</strong> {part.time}
               </p>
               <p className="mb-4">
-                <strong>Content:</strong> {part.content.contentType}
+                <strong>Content:</strong> {part.content.key}
               </p>
               <div>
                 <h4 className="text-lg font-medium mb-2">Questions:</h4>
@@ -41,7 +42,6 @@ export const PartsList = ({ template }: { template: Template }) => {
                   part.items.map((item, itemIndex) => {
                     return (
                       <div key={itemIndex}>
-                        <div> {item.questionType} </div>
                         {item.questionId && (
                           <div>
                             {item.questionType === "FIB" ? (
