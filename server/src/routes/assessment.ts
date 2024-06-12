@@ -1,26 +1,116 @@
 import { Router } from "express";
-import { AssessmentBuilder, AssessmentParts, AssessmentTemplate, } from "../Assessment_Builder/AssessmentBuilder";
+import { AssessmentBuilder, AssessmentParts } from "../Assessment_Builder/AssessmentBuilder";
 import Assessment from "../models/Assessment_Schema";
-import  { IParts } from "../models/TemplateParts_Schema"
-import MCQ from "../models/MCQ_Schema";
-import FIB from "../models/FIB_Schema";
-import MTF from "../models/MTF_Schema"
-import AudioQuestion from "../models/AudioQuestion";
+import MCQ, { IMCQ } from "../models/MCQ_Schema";
+import FIB, { IFIB, QuesitonType } from "../models/FIB_Schema";
+import MTF, { IMTF } from "../models/MTF_Schema"
+import AudioQuestion, { IAudioQuestion } from "../models/AudioQuestion";
 
 const assessmentRouter = Router();
 
 // TODO: need to do input validaton for all these routes 
 
+interface CreateParts {
+    name: string;
+    instruction: string;
+    description: string;
+    time: string;
+    content: QuesitonType[];
+    policies: {
+      grade: {
+        questionType: string;
+        weightage: number;
+      }[];
+    };
+    items: {
+      questionType: string;
+      tag: string;
+      question: QuesitonType[];
+      fibAnswers?: QuesitonType[];
+      options?: {
+        contentType: string;
+        key: {
+          value: string;
+          isAnswer: boolean;
+        };
+      }[];
+      leftOptions?: QuesitonType[];
+      rightOptions?: QuesitonType[];
+      mtfAnswers?: {
+        leftAnswer?: QuesitonType;
+        rightAnswer?: QuesitonType;
+      }[];
+    }[];
+  }
+
+  const transformParts = (createParts: CreateParts[]): AssessmentParts[] => {
+    return createParts.map(part => {
+        const transformedItems = part.items.map(item => {
+            switch (item.questionType) {
+                case "MCQ":
+                    return {
+                        questionType: item.questionType,
+                        question: item.question,
+                        options: item.options?.map(option => ({contentType:option.contentType,key:option.key.value})) || [],
+                        answers: item.options?.filter(option => option.key.isAnswer).map(option => ({key:option.key.value,contentType:option.contentType})) || [],
+                        time: part.time,
+                        tag: item.tag
+                    } as unknown as IMCQ;
+                case "FIB":
+                    return {
+                        questionType: item.questionType,
+                        question: item.question,
+                        answers: item.fibAnswers || [],
+                        time: part.time,
+                        tag: item.tag
+                    } as IFIB;
+                case "MTF":
+                    return {
+                        questionType: item.questionType,
+                        question: item.question,
+                        leftOptions: item.leftOptions || [],
+                        rightOptions: item.rightOptions || [],
+                        answers: item.mtfAnswers?.map(answer => ({
+                            leftAnswer: answer.leftAnswer,
+                            rightAnswers: [answer.rightAnswer]
+                        })) || [],
+                        time: part.time,
+                        tag: item.tag
+                    } as unknown as IMTF;
+                case "AudioQuestion" :
+                    return {questionType:item.questionType,question:item.question,time:part.time} as IAudioQuestion;
+                default:
+                    throw new Error(`Unsupported question type: ${item.questionType}`);
+            }
+        });
+
+        return {
+            name: part.name,
+            instruction: part.instruction,
+            description: part.description,
+            time: part.time,
+            content: part.content,
+            policies: {
+                grade: part.policies.grade.map(policy => ({
+                    questionType: policy.questionType,
+                    weightage: policy.weightage
+                }))
+            },
+            items: transformedItems
+        } as unknown as AssessmentParts;
+    });
+};
+
 assessmentRouter.post('/add-assessment', async (req, res) => {
     try {
         const type:string = req.body.assessment.type;
         const title:string = req.body.assessment.title;
-        const assessment:AssessmentParts[] = req.body.assessment.parts;
+        const assessment:CreateParts[] = req.body.assessment.parts;
         const time = req.body.assessment.time;
         const templateType = req.body.assessment.templateType;
         const newAssessment = new AssessmentBuilder();
-        const id = await newAssessment.createAssessment(title, assessment, type, time, templateType);
-        // res.status(201).json({ message: "Assessment Created", id });
+        const id = await newAssessment.createAssessment(title, transformParts(assessment), type, time, templateType);
+        res.status(201).json({ message: "Assessment Created", id });
     } catch (error) {
         console.log(error);
         res.status(500).json({ message: "Internal Server Error" });

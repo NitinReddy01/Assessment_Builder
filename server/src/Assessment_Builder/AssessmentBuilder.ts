@@ -1,4 +1,3 @@
-import mongoose from "mongoose";
 import Assessment from "../models/Assessment_Schema";
 import { IAudioQuestion } from "../models/AudioQuestion";
 import { IFIB, QuesitonType } from "../models/FIB_Schema";
@@ -45,7 +44,6 @@ export class AssessmentBuilder{
             const itemIds  = part.items.map(item=>{
                 return {questionType:item.questionType};
             })
-            console.log(part.policies);
             const newPart = await Parts.create({
                 name:part.name,
                 instruction:part.instruction,
@@ -70,17 +68,17 @@ export class AssessmentBuilder{
             let partIds = await Promise.all(assessment.map(async (part)=>{
                 const itemIds  = await Promise.all(part.items.map(async (item)=>{
                     if(item.questionType==="FIB") {
-                        const newFib = new FIBItem(item.question,(item as IFIB ).answers ,item.time,item.questionType);
+                        const newFib = new FIBItem(item.question,(item as IFIB ).answers ,item.time,item.questionType,(item as IFIB).tag);
                         const id = await newFib.create();
                         return {questionType:item.questionType,questionId:id};
                     } 
                     else if(item.questionType === "MCQ") {
-                        const newMcq = new MCQItem(item.question,((item as IMCQ ).options),(item as IMCQ).answers ,item.time,item.questionType)
+                        const newMcq = new MCQItem(item.question,((item as IMCQ ).options),(item as IMCQ).answers ,item.time,item.questionType,(item as IMCQ).tag)
                         const id = await newMcq.create();
                         return {questionType:item.questionType,questionId:id};
                     } else if(item.questionType === "MTF") {
                         let mtfItem = item as IMTF;
-                        const newMTF = new MTFItem(mtfItem.question,mtfItem.leftOptions,mtfItem.rightOptions,mtfItem.answers,mtfItem.time,mtfItem.questionType);
+                        const newMTF = new MTFItem(mtfItem.question,mtfItem.leftOptions,mtfItem.rightOptions,mtfItem.answers,mtfItem.time,mtfItem.questionType,mtfItem.tag);
                         const id = await newMTF.create();
                         return {questionType:item.questionType,questionId:id};
                     } else if(item.questionType === "AudioQuestion") {

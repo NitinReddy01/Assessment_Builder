@@ -13,7 +13,6 @@ templateRouter.post('/add-template',async (req,res)=>{
             return res.status(404).json({message:"Template required"});
         }
         const template : ITemplate = req.body.template;
-        // console.log(template.parts[0].policies);
         const newTemplate = new AssessmentBuilder();
         const templateId = await newTemplate.createTemplate(template);
         return res.status(201).json({templateId});

@@ -40,11 +40,11 @@ export const PartsList = ({ template }: { template: Template }) => {
                 {part.items && part.items.length > 0 ? (
                   part.items.map((item, itemIndex) => {
                     return (
-                      <div key={itemIndex} >
+                      <div key={itemIndex}>
                         <div> {item.questionType} </div>
                         {item.questionId && (
                           <div>
-                            {item.questionId.type === "FIB" ? (
+                            {item.questionType === "FIB" ? (
                               <ViewFIBQuestion
                                 questionIndex={itemIndex}
                                 time={item.questionId.time}
@@ -61,7 +61,7 @@ export const PartsList = ({ template }: { template: Template }) => {
                                 answers={(item.questionId as MCQ).answers}
                                 questionIndex={itemIndex}
                               />
-                            ) : item.questionId.type === "MTF" ? (
+                            ) : item.questionType === "MTF" ? (
                               <ViewMTFQuestion
                                 answers={(item.questionId as MTF).answers}
                                 time={item.questionId.time}
@@ -88,22 +88,26 @@ export const PartsList = ({ template }: { template: Template }) => {
               <div>
                 <h4 className="text-lg font-medium mt-4 mb-2">Policies:</h4>
                 {part.policies && part.policies.grade.length > 0 ? (
-                  <ul className="list-disc list-inside ml-4">
-                    <li>
-                      <div>
-                        <span>Question Type</span>
-                        <span>weightage</span>
-                      </div>
-                    </li>
-                    {part.policies.grade.map((policy, i) => (
-                      <li key={i}>
-                        <div>
-                          <span>{policy.questionType}</span>
-                          <span>{policy.weightage}</span>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
+                  <table className="min-w-full">
+                    <thead>
+                      <tr>
+                        <th className="px-4 py-2">Question Type</th>
+                        <th className="px-4 py-2">Weightage</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {part.policies.grade.map((policy, i) => (
+                        <tr key={i}>
+                          <td className="border px-4 py-2">
+                            {policy.questionType}
+                          </td>
+                          <td className="border px-4 py-2">
+                            {policy.weightage}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 ) : (
                   <p>No policies</p>
                 )}
@@ -130,7 +134,7 @@ const ViewTemplate = () => {
     fetch();
   }, [id]);
 
-  if(!id) {
+  if (!id) {
     return "Invalid";
   }
 

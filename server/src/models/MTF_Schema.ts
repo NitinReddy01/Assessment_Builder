@@ -7,7 +7,7 @@ export interface IMTF extends Document {
     rightOptions:QuesitonType[],
     answers: {
         leftAnswer: QuesitonType;
-        rightAnswer: QuesitonType[];
+        rightAnswers: QuesitonType[];
     }[];
     time:string;
     tag?:string;
@@ -66,7 +66,7 @@ const mtfSchema = new mongoose.Schema<IMTF>({
     },
     answers: [
         {
-            leftOption: {
+            leftAnswer: {
                 type:{
                 contentType:{
                     type:String,
@@ -78,7 +78,7 @@ const mtfSchema = new mongoose.Schema<IMTF>({
                 }
                 },
             },
-            rightOptions: {
+            rightAnswers: {
                 type:[{
                 contentType:{
                     type:String,

@@ -7,7 +7,7 @@ export class MTFItem {
     private rightOptions: QuesitonType[];
     private answers: {
         leftAnswer: QuesitonType;
-        rightAnswer: QuesitonType[];
+        rightAnswers: QuesitonType[];
     }[];
     private time: string;
     private type:string;
@@ -17,7 +17,7 @@ export class MTFItem {
         question: QuesitonType[],
         leftOptions: QuesitonType[],
         rightOptions: QuesitonType[],
-        answers: { leftAnswer: QuesitonType; rightAnswer: QuesitonType[] }[],
+        answers: { leftAnswer: QuesitonType; rightAnswers: QuesitonType[] }[],
         time: string,
         type:string,
         tag?: string
@@ -55,7 +55,7 @@ export class MTFItem {
                 const matchingAnswer = studentAnswers.find(studAns => 
                     studAns.leftAnswer.contentType === "text" &&
                     studAns.leftAnswer.key === ans.leftAnswer.key &&
-                    ans.rightAnswer.every(rightAns => 
+                    ans.rightAnswers.every(rightAns => 
                         studAns.rightAnswer.some(studentRightAns => 
                             studentRightAns.contentType === "text" && 
                             studentRightAns.key === rightAns.key

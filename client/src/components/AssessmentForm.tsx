@@ -3,6 +3,7 @@ import { AssessmentParts } from "../screens/CreateAssessment";
 import InputField from "./InputField";
 import ToggleButton from "./buttons/ToggleButton";
 import axios from "../api/axios";
+import { useNavigate } from "react-router-dom";
 
 interface AssessmentFormProps {
   template: string;
@@ -30,8 +31,8 @@ interface CreateParts {
     grade: {
       questionType: string;
       weightage: number;
-    };
-  }[];
+    }[];
+  };
   items: {
     questionType: string;
     tag: string;
@@ -68,6 +69,9 @@ const AssessmentForm = ({
   time,
   type,
 }: AssessmentFormProps) => {
+
+  const navigate = useNavigate();
+
   const handlePartChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     partIndex: number
@@ -330,8 +334,9 @@ const AssessmentForm = ({
 
   const handleSubmit = async () => {
     try {
-      console.log(assessment);
-      const res = await axios.post("/add-assessment", { assessment });
+      await axios.post("/add-assessment", { assessment });
+      alert("Assessment Created");
+      navigate(-1);
     } catch (error) {
       console.log(error);
     }

@@ -26,8 +26,8 @@ export interface MTF {
   leftOptions: QuesitonType[];
   rightOptions: QuesitonType[];
   answers: {
-    leftOption: QuesitonType;
-    rightOptions: QuesitonType[];
+    leftAnswer: QuesitonType;
+    rightAnswers: QuesitonType[];
   }[];
   time: string;
   tag?: string;
@@ -182,7 +182,7 @@ interface ViewMTFQuestionProps {
   time: string;
   leftOptions: QuesitonType[];
   rightOptions: QuesitonType[];
-  answers: { leftOption: QuesitonType; rightOptions: QuesitonType[] }[];
+  answers: { leftAnswer: QuesitonType; rightAnswers: QuesitonType[] }[];
   tag?: string;
   questionIndex: number;
 }
@@ -243,10 +243,10 @@ export const ViewMTFQuestion = ({
           {answers.map((ans, index) => (
             <div key={index}>
               <div>
-                {ans.leftOption.contentType==='text'?<>
-                    <p  >{ans.leftOption.key } matches {ans.rightOptions.map((rightOption,ind)=>{
+                {ans.leftAnswer.contentType==='text'?<>
+                    <p  >{ans.leftAnswer.key } matches {ans.rightAnswers.map((rightAnswer,ind)=>{
                         return <span key={`right${ind}`}>
-                            {rightOption.contentType==='text'?rightOption.key:null}
+                            {rightAnswer.contentType==='text'?rightAnswer.key:null}
                         </span>
                     })} </p>
                 </>:null}
