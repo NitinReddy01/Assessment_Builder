@@ -4,6 +4,7 @@ import InputField from "./InputField";
 import ToggleButton from "./buttons/ToggleButton";
 import axios from "../api/axios";
 import { useNavigate } from "react-router-dom";
+import { validateTimeInput, validatePartsTime } from "../utils/ValidationChecks";
 
 interface AssessmentFormProps {
   template: string;
@@ -333,6 +334,26 @@ const AssessmentForm = ({
   };
 
   const handleSubmit = async () => {
+    if(!assessment.title.trim()){
+      alert("Enter Assessment Title")
+      return
+    }
+    if(!assessment.type.trim()){
+      alert("Enter Assessment Type")
+      return
+    }
+    if(!assessment.time.trim()){
+      alert("Enter Assessment time Duration")
+      return;
+    }
+    if(!validateTimeInput(assessment.time)){
+      alert("Enter valid assessment Time Duraion")
+      return
+    }
+    if(!validatePartsTime(assessment.parts,parseInt(assessment.time))){
+      alert("Part Duration and Assessment Duration must be Equal")
+      return
+    }
     try {
       await axios.post("/add-assessment", { assessment });
       alert("Assessment Created");

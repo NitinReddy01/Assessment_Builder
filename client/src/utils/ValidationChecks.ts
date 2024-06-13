@@ -1,7 +1,7 @@
 import { Template,Parts } from "../screens/CreateTemplate";
 
 
-function isNumeric(value:string) {
+export function isNumeric(value:string) {
     return /^-?\d+$/.test(value);
 }
 
@@ -55,3 +55,4 @@ export function TemplateTimeValidate(template:Template){
     }
     else return false;
 }
+
