@@ -9,6 +9,8 @@ export default function Templates() {
 
     const [templates,setTemplates] = useState<{_id:string,type:string}[]>([]);
     const [loading,setLoading] = useState(true);
+    const [showModal, setShowModal] = useState(false);
+    const [deleteId, setDeleteId] = useState<string | null>(null);
     const navigate = useNavigate()
     useEffect(()=>{
 
@@ -24,6 +26,27 @@ export default function Templates() {
         }
         getTemplates();
     },[axios])
+
+   
+    const handleDeleteTemplate = async (id: string) => {
+      try {
+        const res = await axios.delete(`/template/${id}`);
+        console.log(res);
+        // Remove the deleted template from the state
+        setTemplates(templates.filter(template => template._id !== id));
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setShowModal(false);
+        setDeleteId(null);
+      }
+    }
+
+    const confirmDelete = (id: string) => {
+      setDeleteId(id);
+      setShowModal(true);
+    }
+  
 
   return (
     <div className="px-16">
@@ -46,12 +69,30 @@ export default function Templates() {
                 navigate(`/view-template/${template._id}`)
               }}><img className="w-7 h-5" src={viewIcon}/><span className="flex items-start">view</span></div>
               <div className="flex gap-2 cursor-pointer font-semibold"><img className="w-7 h-5" src={editIcon}/><span>edit</span></div>
-              <div className="flex gap-2 cursor-pointer font-semibold"><img className="w-7 h-5" src={deleteIcon}/><span className="text-error-800"> delete</span></div>
+              <div className="flex gap-2 cursor-pointer font-semibold"><img className="w-7 h-5" src={deleteIcon} /><span className="text-error-800" onClick={() => { confirmDelete(template._id) }}> delete</span></div>
+              
             </div>
           </div>
         ))
       }
       </div>
+
+      {showModal && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white p-6 rounded-lg">
+            <h2 className="text-xl font-bold mb-4">Confirm Delete</h2>
+            <p>Are you sure you want to delete this template?</p>
+            <p className="text-error-800 ">Caution : Deleting this template will delete all assessments built on this template.</p>
+            <div className="flex justify-end mt-4">
+              <button onClick={() => setShowModal(false)} className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded mr-2">Cancel</button>
+              <button onClick={() => deleteId && handleDeleteTemplate(deleteId)} className="bg-error-800 hover:bg-error-800 text-white font-bold py-2 px-4 rounded">Delete</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+
+
     </div>
   )
 }

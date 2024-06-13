@@ -2,7 +2,13 @@ import { Router } from "express";
 import { AssessmentBuilder, ITemplate } from "../Assessment_Builder/AssessmentBuilder";
 import Template from "../models/Template_Schema";
 import { IParts } from "../models/TemplateParts_Schema";
-
+import Assessment from "../models/Assessment_Schema";
+import Parts from "../models/TemplateParts_Schema";
+import AudioQuestion from "../models/AudioQuestion";
+import FIB from "../models/FIB_Schema";
+import MTF from "../models/MTF_Schema";
+import MCQ from "../models/MCQ_Schema";
+import mongoose from "mongoose";
 const templateRouter = Router();
 
 // TODO: need to do input validation for all routes
@@ -45,5 +51,67 @@ templateRouter.get('/template/:id',async (req,res)=>{
         res.status(500).json({message:"Internal Server Error"});
     }
 })
+
+const deleteParts = async (parts:mongoose.Schema.Types.ObjectId[])=>{
+    try {
+        const allParts = await Parts.find({ _id: { $in: parts } });
+        for (const part of allParts) {
+            const questionIds = part.items.map(item => item.questionId);
+            await AudioQuestion.deleteMany({ _id: { $in: questionIds } });
+            await FIB.deleteMany({ _id: { $in: questionIds } });
+            await MCQ.deleteMany({ _id: { $in: questionIds } });
+            await MTF.deleteMany({ _id: { $in: questionIds } });
+        }
+        await Parts.deleteMany({ _id: { $in: parts } });
+    } catch (error) {
+        
+    }
+}
+
+const deleteTemplate = async (templateId: mongoose.Types.ObjectId) => {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+    
+    try {
+
+        const template = await Template.findById(templateId).session(session);
+
+        const Assessments = await Assessment.find({ templateType: templateId }).session(session);
+
+        await Promise.all(Assessments.map( async (assessment)=>{
+           
+            await deleteParts(assessment.parts);
+        }))
+        await Assessment.deleteMany({ templateType: templateId }).session(session);
+        await deleteParts(template!.parts);
+        await Template.findByIdAndDelete(templateId).session(session);
+        await session.commitTransaction();
+        session.endSession();
+    } catch (error) {
+        await session.abortTransaction();
+        session.endSession();
+        throw error;
+    }
+};
+
+
+// Define the DELETE route for deleting a template
+templateRouter.delete('/template/:id', async (req, res) => {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({ error: 'Invalid template ID' });
+    }
+    const template = await Template.findById(id);
+    if (!template) {
+        return res.status(200).json({message:"Template not found"});
+    };
+    try {
+        await deleteTemplate(new mongoose.Types.ObjectId(id));
+        res.status(200).json({ message: 'Template and all associated data deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ error: 'Error deleting template' });
+    }
+});
 
 export default templateRouter;
