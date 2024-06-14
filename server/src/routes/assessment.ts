@@ -1,13 +1,18 @@
 import { Router } from "express";
 import { AssessmentBuilder, AssessmentParts } from "../Assessment_Builder/AssessmentBuilder";
-import Assessment from "../models/Assessment_Schema";
+import Assessment, { IAsessment } from "../models/Assessment_Schema";
 import MCQ, { IMCQ } from "../models/MCQ_Schema";
 import FIB, { IFIB, QuesitonType } from "../models/FIB_Schema";
 import MTF, { IMTF } from "../models/MTF_Schema"
 import AudioQuestion, { IAudioQuestion } from "../models/AudioQuestion";
-
+import mongoose from "mongoose";
+import Template from "../models/Template_Schema";
+import Parts from "../models/TemplateParts_Schema";
 const assessmentRouter = Router();
 
+interface IAssessmentWithId extends IAsessment {
+    _id: mongoose.Types.ObjectId;
+}
 // TODO: need to do input validaton for all these routes 
 
 interface CreateParts {
@@ -168,6 +173,61 @@ assessmentRouter.get('/assessment/:id', async (req, res) => {
 });
 
 
+export const deleteParts = async (parts:mongoose.Schema.Types.ObjectId[],session:mongoose.mongo.ClientSession)=>{
+    try {
+        const allParts = await Parts.find({ _id: { $in: parts } });
+        for (const part of allParts) {
+            const questionIds = part.items.map(item => item.questionId);
+            await AudioQuestion.deleteMany({ _id: { $in: questionIds } }).session(session);
+            await FIB.deleteMany({ _id: { $in: questionIds } }).session(session);
+            await MCQ.deleteMany({ _id: { $in: questionIds } }).session(session);
+            await MTF.deleteMany({ _id: { $in: questionIds } }).session(session);
+        }
+        await Parts.deleteMany({ _id: { $in: parts } }).session(session);
+    } catch (error) {
+        await session.abortTransaction();
+        session.endSession();
+        throw error;
+    }
+}
+
+const deleteAssesssment = async (assessment:IAssessmentWithId) => {
+    console.log(assessment)
+    const session = await mongoose.startSession();
+    session.startTransaction();
+    
+    try {
+        await deleteParts(assessment.parts,session);
+        await Assessment.findByIdAndDelete(assessment._id).session(session);
+        await session.commitTransaction();
+        session.endSession();
+    } catch (error) {
+        await session.abortTransaction();
+        session.endSession();
+        throw error;
+    }
+};
+
+assessmentRouter.delete('/assessment/:id', async (req, res) => {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({ error: 'Invalid template ID' });
+    }
+    const assessment = await Assessment.findById(id);
+    if (!assessment) {
+        return res.status(200).json({message:"Assessment not found"});
+    };
+    try {
+        // await deleteAssesssment(new mongoose.Types.ObjectId(id));
+        await deleteAssesssment(assessment);
+        res.status(200).json({ message: 'Assessment and all associated data deleted successfully' });
+        // res.status(200).json(assessment);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'Error deleting template' });
+    }
+});
 
 
 export default assessmentRouter;
