@@ -5,6 +5,7 @@ import ToggleButton from "./buttons/ToggleButton";
 import axios from "../api/axios";
 import { useNavigate } from "react-router-dom";
 import { validateTimeInput, validatePartsTime } from "../utils/ValidationChecks";
+import { ValidateAssessmentItems } from "../utils/ValidateAssessmentChecks";
 
 interface AssessmentFormProps {
   template: string;
@@ -18,7 +19,7 @@ interface AssessmentFormProps {
   setType: React.Dispatch<React.SetStateAction<string>>;
 }
 
-interface Answer {
+export interface Answer {
   contentType: string;
   key: string;
 }
@@ -54,7 +55,7 @@ interface CreateParts {
     }[];
   }[];
 }
-interface CreateAssessment {
+export interface CreateAssessment {
   title: string;
   templateType: string;
   type: string;
@@ -350,9 +351,19 @@ const AssessmentForm = ({
       alert("Enter valid assessment Time Duraion")
       return
     }
+    for(let i of assessment.parts!){
+      if(!i.name.trim() || !i.content.key.trim() || !i.description.trim() || !i.instruction.trim()){
+        alert("Fill up all parts Details")
+        return;
+      }
+    }
     if(!validatePartsTime(assessment.parts,parseInt(assessment.time))){
       alert("Part Duration and Assessment Duration must be Equal")
       return
+    }
+    if(!ValidateAssessmentItems(assessment)){
+      alert("Assessment Items need to be validated");
+      return;
     }
     try {
       await axios.post("/add-assessment", { assessment });
@@ -461,7 +472,7 @@ const AssessmentForm = ({
                             <div className="flex justify-between">
                               <p className="font-bold">{`Question ${
                                 questionIndex + 1
-                              } - MCQ  `}</p>
+                              } - MCQ (atleast one option is marked as correct answer)`}</p>
                             </div>
                             <InputField
                               label={`Enter MCQ Question`}

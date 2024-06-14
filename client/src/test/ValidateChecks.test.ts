@@ -30,7 +30,7 @@ const t:Template = {
 
 const t1:Template = {
     type:"sample",
-    time:"10m",
+    time:"1awd0m",
     parts:[p1,p1]
 }
 

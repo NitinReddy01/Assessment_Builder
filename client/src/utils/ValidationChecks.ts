@@ -55,4 +55,3 @@ export function TemplateTimeValidate(template:Template){
     }
     else return false;
 }
-
