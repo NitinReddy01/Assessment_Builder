@@ -31,7 +31,7 @@ export default function Templates() {
     const handleDeleteTemplate = async (id: string) => {
       try {
         const res = await axios.delete(`/template/${id}`);
-        console.log(res);
+        // console.log(res);
         // Remove the deleted template from the state
         setTemplates(templates.filter(template => template._id !== id));
       } catch (error) {

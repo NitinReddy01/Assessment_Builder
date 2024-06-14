@@ -9,6 +9,7 @@ import FIB from "../models/FIB_Schema";
 import MTF from "../models/MTF_Schema";
 import MCQ from "../models/MCQ_Schema";
 import mongoose from "mongoose";
+import { deleteParts } from "./assessment";
 const templateRouter = Router();
 
 // TODO: need to do input validation for all routes
@@ -52,21 +53,6 @@ templateRouter.get('/template/:id',async (req,res)=>{
     }
 })
 
-const deleteParts = async (parts:mongoose.Schema.Types.ObjectId[])=>{
-    try {
-        const allParts = await Parts.find({ _id: { $in: parts } });
-        for (const part of allParts) {
-            const questionIds = part.items.map(item => item.questionId);
-            await AudioQuestion.deleteMany({ _id: { $in: questionIds } });
-            await FIB.deleteMany({ _id: { $in: questionIds } });
-            await MCQ.deleteMany({ _id: { $in: questionIds } });
-            await MTF.deleteMany({ _id: { $in: questionIds } });
-        }
-        await Parts.deleteMany({ _id: { $in: parts } });
-    } catch (error) {
-        
-    }
-}
 
 const deleteTemplate = async (templateId: mongoose.Types.ObjectId) => {
     const session = await mongoose.startSession();
@@ -79,11 +65,10 @@ const deleteTemplate = async (templateId: mongoose.Types.ObjectId) => {
         const Assessments = await Assessment.find({ templateType: templateId }).session(session);
 
         await Promise.all(Assessments.map( async (assessment)=>{
-           
-            await deleteParts(assessment.parts);
+            await deleteParts(assessment.parts,session);
         }))
         await Assessment.deleteMany({ templateType: templateId }).session(session);
-        await deleteParts(template!.parts);
+        await deleteParts(template!.parts,session);
         await Template.findByIdAndDelete(templateId).session(session);
         await session.commitTransaction();
         session.endSession();
