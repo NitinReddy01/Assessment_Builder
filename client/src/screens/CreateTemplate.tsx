@@ -129,7 +129,7 @@ function CreateTemplate() {
 
 
 
-  const addNewPart = (a: any) => {
+  const addNewPart = () => {
     if(!newPart.name.trim()){
       alert("Enter Name")
       return;
