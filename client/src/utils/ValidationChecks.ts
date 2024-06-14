@@ -1,7 +1,6 @@
 import { Template,Parts } from "../screens/CreateTemplate";
 
-
-function isNumeric(value:string) {
+export function isNumeric(value:string) {
     return /^-?\d+$/.test(value);
 }
 
@@ -18,9 +17,9 @@ export function validateTimeInput(time:string){
 export function getPartsTime(parts?:Parts[],templateTime?:string,newPartTime?:string){
         let TotalTime = 0;
         if(parts){
-            for(let i of parts){
-                if(i.time && validateTimeInput(i.time)){
-                TotalTime += parseInt(i.time)
+            for(let part of parts){
+                if(part.time && validateTimeInput(part.time)){
+                TotalTime += parseInt(part.time)
             }
         }
         if(templateTime!=null && newPartTime && TotalTime+parseInt(newPartTime) > parseInt(templateTime)){
@@ -33,9 +32,9 @@ export function getPartsTime(parts?:Parts[],templateTime?:string,newPartTime?:st
 export function validatePartsTime(parts?:Parts[],templateTime?:number){
     let TotalTime = 0
     if(parts){
-        for(let i of parts){
-            if(i.time && validateTimeInput(i.time)){
-            TotalTime += parseInt(i.time)
+        for(let part of parts){
+            if(part.time && validateTimeInput(part.time)){
+            TotalTime += parseInt(part.time)
             }
             else{
                 return false;

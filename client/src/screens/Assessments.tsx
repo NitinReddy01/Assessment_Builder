@@ -102,7 +102,7 @@ export default function Assessments() {
               >
                 Close
               </button>
-              <Link to={template!=="none" ? `/create-assessment/${template}` : ''} className="px-4 py-2 font-semibold text-white bg-primary-500 rounded-full hover:bg-primary-800"  >
+              <Link to={template!=="none" ? `/create-assessment/${template}` : ""} className="px-4 py-2 font-semibold text-white bg-primary-500 rounded-full hover:bg-primary-800"  >
                 Create Assessment
               </Link>
             </div>
