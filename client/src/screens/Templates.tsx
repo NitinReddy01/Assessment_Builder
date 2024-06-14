@@ -4,6 +4,7 @@ import viewIcon from "../assets/icons/viewIcon.svg"
 import editIcon from "../assets/icons/editIcon.svg"
 import deleteIcon from "../assets/icons/deleteIcon.svg"
 import { useNavigate } from "react-router-dom";
+import ConfirmationModal from "../components/Modals/CofirmationModal";
 
 export default function Templates() {
 
@@ -77,22 +78,15 @@ export default function Templates() {
       }
       </div>
 
-      {showModal && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-6 rounded-lg">
-            <h2 className="text-xl font-bold mb-4">Confirm Delete</h2>
-            <p>Are you sure you want to delete this template?</p>
-            <p className="text-error-800 ">Caution : Deleting this template will delete all assessments built on this template.</p>
-            <div className="flex justify-end mt-4">
-              <button onClick={() => setShowModal(false)} className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded mr-2">Cancel</button>
-              <button onClick={() => deleteId && handleDeleteTemplate(deleteId)} className="bg-error-800 hover:bg-error-800 text-white font-bold py-2 px-4 rounded">Delete</button>
-            </div>
-          </div>
-        </div>
-      )}
 
-
-
+<ConfirmationModal
+                      show={showModal}
+                      onClose={() => setShowModal(false)}
+                      onConfirm={() => deleteId && handleDeleteTemplate(deleteId)}
+                      title="Confirm Delete"
+                      message="Are you sure you want to delete this template?"
+                      caution="Caution : Deleting this template will delete all assessments built on this template."
+                  />
     </div>
   )
 }
