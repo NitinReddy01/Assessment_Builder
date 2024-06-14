@@ -192,7 +192,7 @@ export const deleteParts = async (parts:mongoose.Schema.Types.ObjectId[],session
 }
 
 const deleteAssesssment = async (assessment:IAssessmentWithId) => {
-    console.log(assessment)
+    
     const session = await mongoose.startSession();
     session.startTransaction();
     

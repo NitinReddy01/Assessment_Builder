@@ -154,7 +154,7 @@ function CreateTemplate() {
       alert("Parts Time Duration Exceeds Template Time")
       return
     }
-    // console.log(object)
+   
     setTemplate((prev) => ({
       ...prev,
       parts: [...(prev.parts ?? []), newPart],

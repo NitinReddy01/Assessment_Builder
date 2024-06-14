@@ -20,7 +20,7 @@ const DisplayPart = ({
     };
   }) => {
 
-console.log(name)
+
     const [isOpen, setIsOpen] = useState(false);
     const [partData, setPartData] = useState({
       name:name,
@@ -42,7 +42,7 @@ console.log(name)
     const handleCloseModal = () => {
       setIsOpen(false);
     };
-    console.log(partData)
+   
     return (
       <div>
         <div>Part Name: {partData.name}</div>

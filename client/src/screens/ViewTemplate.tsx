@@ -50,13 +50,8 @@ export const PartsList = ({ template }: { template: Template }) => {
 
   const SubmitEditData=()=>{
 
-    console.log(editableTemplate)
-    //  send a put rest to router /update-template with editable Template
-    
     axios.put("/update-template",{
       template:editableTemplate
-    }).then((Res)=>{
-      console.log(Res)
     })
 
     
@@ -66,7 +61,7 @@ export const PartsList = ({ template }: { template: Template }) => {
   }
 
 
-  console.log(template)
+
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
       <button

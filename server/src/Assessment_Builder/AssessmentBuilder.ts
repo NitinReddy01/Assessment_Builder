@@ -110,14 +110,14 @@ export class AssessmentBuilder {
                         policies: part.policies
                     });
                 }
-                console.log(partToUpdate)
+             
 
                 if (partToUpdate._id) {
                     return partToUpdate._id;
                 } 
             }));
 
-            console.log(updatedParts, "line number 120 ");
+           
             // Update the template with the updatedParts array
             templateToUpdate.type = template.type;
             templateToUpdate.time = template.time;
