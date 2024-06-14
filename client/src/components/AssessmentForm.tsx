@@ -4,6 +4,8 @@ import InputField from "./InputField";
 import ToggleButton from "./buttons/ToggleButton";
 import axios from "../api/axios";
 import { useNavigate } from "react-router-dom";
+import { validateTimeInput, validatePartsTime } from "../utils/ValidationChecks";
+import { ValidateAssessmentItems } from "../utils/ValidateAssessmentChecks";
 
 interface AssessmentFormProps {
   template: string;
@@ -17,7 +19,7 @@ interface AssessmentFormProps {
   setType: React.Dispatch<React.SetStateAction<string>>;
 }
 
-interface Answer {
+export interface Answer {
   contentType: string;
   key: string;
 }
@@ -53,7 +55,7 @@ interface CreateParts {
     }[];
   }[];
 }
-interface CreateAssessment {
+export interface CreateAssessment {
   title: string;
   templateType: string;
   type: string;
@@ -333,6 +335,36 @@ const AssessmentForm = ({
   };
 
   const handleSubmit = async () => {
+    if(!assessment.title.trim()){
+      alert("Enter Assessment Title")
+      return
+    }
+    if(!assessment.type.trim()){
+      alert("Enter Assessment Type")
+      return
+    }
+    if(!assessment.time.trim()){
+      alert("Enter Assessment time Duration")
+      return;
+    }
+    if(!validateTimeInput(assessment.time)){
+      alert("Enter valid assessment Time Duraion")
+      return
+    }
+    for(let part of assessment.parts!){
+      if(!part.name.trim() || !part.content.key.trim() || !part.description.trim() || !part.instruction.trim()){
+        alert("Fill up all parts Details")
+        return;
+      }
+    }
+    if(!validatePartsTime(assessment.parts,parseInt(assessment.time))){
+      alert("Part Duration and Assessment Duration must be Equal")
+      return
+    }
+    if(!ValidateAssessmentItems(assessment)){
+      alert("Assessment Items need to be validated");
+      return;
+    }
     try {
       await axios.post("/add-assessment", { assessment });
       alert("Assessment Created");
@@ -440,7 +472,7 @@ const AssessmentForm = ({
                             <div className="flex justify-between">
                               <p className="font-bold">{`Question ${
                                 questionIndex + 1
-                              } - MCQ  `}</p>
+                              } - MCQ (atleast one option is marked as correct answer)`}</p>
                             </div>
                             <InputField
                               label={`Enter MCQ Question`}

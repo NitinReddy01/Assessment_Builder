@@ -3,6 +3,8 @@ import InputField from '../components/InputField';
 import { useNavigate } from 'react-router-dom';
 import axios from '../api/axios';
 import { AudioQuestion, FIB, MCQ, MTF } from '../components/Questions';
+import { TemplateTimeValidate, getPartsTime, validateTimeInput, validatePartsTime } from '../utils/ValidationChecks';
+
 
 import PartEditModal from '../components/PartEditModal';
 
@@ -76,6 +78,18 @@ function CreateTemplate() {
   }
 
   const openDialog = () => {
+    if(!template.type.trim()){
+      alert("Enter Template type")
+      return
+    }
+    if(!template.time?.trim()){
+      alert("Enter Template Time Duration")
+      return;
+    }
+    if(template.time && !TemplateTimeValidate(template)){
+      alert("Enter Valid Template Time Duration")
+      return;
+    }
     setIsOpen(true);
   };
 
@@ -113,7 +127,33 @@ function CreateTemplate() {
     });
   };
 
+
+
   const addNewPart = (a: any) => {
+    if(!newPart.name.trim()){
+      alert("Enter Name")
+      return;
+    }
+    if(!newPart.instruction.trim()){
+      alert("Enter instructions")
+      return;
+    }
+    if(!newPart.description.trim()){
+      alert("Enter Description")
+      return
+    }
+    if(!newPart.time.trim()){
+      alert("Enter Time Duration")
+      return
+    }
+    if(!validateTimeInput(newPart.time)){
+      alert("Enter valid Time Duration")
+      return
+    }
+    if(newPart.time && !getPartsTime(template.parts,template.time,newPart.time)){
+      alert("Parts Time Duration Exceeds Template Time")
+      return
+    }
     // console.log(object)
     setTemplate((prev) => ({
       ...prev,
@@ -134,16 +174,16 @@ function CreateTemplate() {
       items: []
     });
     setIsOpen(false);
-  };
+    }
 
-  const handleAddItem = (questionType: string) => {
-    setNewPart((prev) => {
-      const updatedItems = [...prev.items, { questionType }];
-      return {
-        ...prev,
-        items: updatedItems,
-      };
-    });
+    const handleAddItem = (questionType: string) => {
+      setNewPart((prev) => {
+        const updatedItems = [...prev.items, { questionType }];
+        return {
+          ...prev,
+          items: updatedItems,
+        };
+      });
   };
 
   const handleRemoveItem = (index: number) => {
@@ -157,15 +197,31 @@ function CreateTemplate() {
   };
 
   const handleSaveTemplate = async () => {
-    console.log(template)
+   
     try {
-      await axios.post('/add-template', {
-        template
-      }).then((res)=>{
-        console.log(res)
+      if(!template.type.trim()){
+        alert("Enter Template type")
+        return
+      }
+      if(!template.time?.trim()){
+        alert("Enter Template time")
+        return;
+      }
+      if(!TemplateTimeValidate(template)){
+        alert("Enter Valid Template Time Duration")
+        return;
+      }
+      if(!validatePartsTime(template.parts,parseInt(template.time))){
+        alert("Please check Time Durations")
+        return
+      }
+        await axios.post('/add-template', {
+          template
+        }).then((res)=>{
+        
       })
-      alert("Template Created")
-      navigate(-1);
+        alert("Template Created")
+        navigate(-1);
     } catch (error) {
       console.log(error);
       alert("Creation Failed")
@@ -225,7 +281,7 @@ function CreateTemplate() {
         </div>
         <div className="grid grid-cols-2 gap-2">
           <InputField label={"Template Type"} name={'type'} value={template.type} onChange={handleChange} />
-          <InputField label={"Template time"} name={'time'} value={template.time ?? ""} onChange={handleChange} />
+          <InputField label={"Template time (eg 10m, 20m)"} name={'time'} value={template.time ?? ""} onChange={handleChange} />
         </div>
         <div className="flex flex-col gap-2">
           <div className='grid grid-cols-5'>
@@ -268,7 +324,7 @@ function CreateTemplate() {
               //       <InputField label={"Part Name"} name={'name'} value={newPart.name} onChange={handlePartInputChange} />
               //       <InputField label={"Part Instruction"} name={'instruction'} value={newPart.instruction} onChange={handlePartInputChange} />
               //       <InputField label={"Part Description"} name={'description'} value={newPart.description} onChange={handlePartInputChange} />
-              //       <InputField label={"Part Time"} name={"time"} value={newPart.time} onChange={handlePartInputChange} />
+              //       <InputField label={"Part Time (eg 10m 20m)"} name={"time"} value={newPart.time} onChange={handlePartInputChange} />
               //     </div>
               //     <div>
               //       <div className='flex gap-4'>
