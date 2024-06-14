@@ -27,8 +27,8 @@ export function ValidateFIB(item:Item){
     if(item.question[0].key){
         const FIBCount = (item.question[0].key.match(/__/g)||[]).length
         const getValidFIBs= ()=>{
-            for(let i of item.fibAnswers!){
-                if(i.key.trim()==="") return 0
+            for(let fibAnswers of item.fibAnswers!){
+                if(fibAnswers.key.trim()==="") return 0
             }
             return item.fibAnswers!.length
         }
@@ -40,12 +40,12 @@ export function ValidateFIB(item:Item){
 }
 
 export function ValidateMTF(item:Item){
-    if(!item.tag) return false; // put this in CreateAssessment file
-    if(!item.question) return false;
+    if(!item.tag.trim()) return false; // put this in CreateAssessment file
+    if(!item.question[0].key.trim()) return false;
     if(!item.leftOptions?.length || !item.rightOptions?.length) return false
     if(!item.mtfAnswers) return false;
-    for(let i of item.mtfAnswers){
-        if(!i.leftAnswer!.key.trim() || !i.rightAnswer!.key.trim()) return false
+    for(let mtfs of item.mtfAnswers){
+        if(!mtfs.leftAnswer!.key.trim() || !mtfs.rightAnswer!.key.trim()) return false
     }
     if(item.leftOptions.length != item.mtfAnswers.length) return false
     return true;
@@ -62,12 +62,12 @@ export function ValidateMCQ(item:Item){
 
 export function ValidateAssessmentItems(assessment:CreateAssessment){
     if(assessment.parts){
-        for(let i of assessment.parts){
-            for(let j of i.items){
-                let jItem:Item = j
-                if(j.questionType=="FIB") if(!ValidateFIB(jItem)) return false 
-                if(j.questionType === "MTF") if(!ValidateMTF(jItem)) return false;
-                if(j.questionType === "MCQ" ) if(!ValidateMCQ(jItem)) return false;
+        for(let part of assessment.parts){
+            for(let item of part.items){
+                let curItem:Item = item
+                if(item.questionType=="FIB") if(!ValidateFIB(curItem)) return false 
+                if(item.questionType === "MTF") if(!ValidateMTF(curItem)) return false;
+                if(item.questionType === "MCQ" ) if(!ValidateMCQ(curItem)) return false;
             }
         }
     }

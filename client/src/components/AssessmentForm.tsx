@@ -351,8 +351,8 @@ const AssessmentForm = ({
       alert("Enter valid assessment Time Duraion")
       return
     }
-    for(let i of assessment.parts!){
-      if(!i.name.trim() || !i.content.key.trim() || !i.description.trim() || !i.instruction.trim()){
+    for(let part of assessment.parts!){
+      if(!part.name.trim() || !part.content.key.trim() || !part.description.trim() || !part.instruction.trim()){
         alert("Fill up all parts Details")
         return;
       }
