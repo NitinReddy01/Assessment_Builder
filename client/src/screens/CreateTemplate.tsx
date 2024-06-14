@@ -217,9 +217,7 @@ function CreateTemplate() {
       }
         await axios.post('/add-template', {
           template
-        }).then((res)=>{
-        
-      })
+        })
         alert("Template Created")
         navigate(-1);
     } catch (error) {
