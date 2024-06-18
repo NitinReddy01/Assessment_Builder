@@ -65,6 +65,7 @@ export default function Templates() {
         templates && templates.map((template)=>(
           <div key={template._id} className="flex justify-between rounded-lg gap-4 border p-2">
             <div className="flex items-center text-lg font-bold">{template!.type}</div>
+            
             <div>
               <div className="flex gap-2 cursor-pointer font-semibold items-start" onClick={()=>{
                 navigate(`/view-template/${template._id}`)

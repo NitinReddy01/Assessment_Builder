@@ -29,6 +29,22 @@ templateRouter.post('/add-template',async (req,res)=>{
     }
 });
 
+templateRouter.put('/update-template',async (req,res)=>{
+   
+    try {
+        if(!req.body.template){
+            return res.status(404).json({message:"Template required"});
+        }
+        const template : ITemplate = req.body.template;
+        const newTemplate = new AssessmentBuilder();
+        const templateId = await newTemplate.updateTemplate(req.body.template._id,template);
+        return res.status(201).json({templateId});
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({message:"Internal Server Error"});
+    }
+});
+
 templateRouter.get('/all-templates',async (req,res)=>{
     try {
         const templates = await Template.find({}).select("type");
