@@ -6,6 +6,10 @@ export interface IAsessment{
     time:string;
     parts:Array<mongoose.Schema.Types.ObjectId>;
     templateType:string;
+    month:number;
+    week:number;
+    bucket:string;
+    Class:number;
 }
 
 const assessmentSchema = new mongoose.Schema({
@@ -14,6 +18,12 @@ const assessmentSchema = new mongoose.Schema({
         required:true,
         trim:true
     },
+    Class:{
+        type:Number,
+        required:true,
+        trim:true
+    },
+
     title:{
         type:String,
         required:true,
@@ -27,6 +37,21 @@ const assessmentSchema = new mongoose.Schema({
     time:{
         type:String,
         required:true,
+        trim:true
+    },
+    bucket:{
+        type:String,
+        required:false,
+        trim:true
+    },
+    month:{
+        type:Number,
+        required:false,
+        trim:true
+    },
+    week:{
+        type:Number,
+        required:false,
         trim:true
     },
     parts:[{
