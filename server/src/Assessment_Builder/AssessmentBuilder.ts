@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import { Schema, Types } from "mongoose";
 import Assessment from "../models/Assessment_Schema";
 import { IAudioQuestion } from "../models/AudioQuestion";
 import { IFIB, QuesitonType } from "../models/FIB_Schema";
@@ -11,90 +11,57 @@ import { FIBItem } from "./FIBItem";
 import { MCQItem } from "./MCQItem";
 import { MTFItem } from "./MTFItem";
 
-export interface AssessmentParts{
-    name:string;
-    instruction:string;
-    description:string;
-    time:string;
-    content:QuesitonType;
-    policies:{
-        grade:{
-            questionType:string;
-            weightage:string
+export interface AssessmentParts {
+    name: string;
+    instruction: string;
+    description: string;
+    time: string;
+    content: QuesitonType;
+    policies: {
+        grade: {
+            questionType: string;
+            weightage: string
         }[]
     };
-    items:(IMCQ | IMTF | IFIB | IAudioQuestion)[]
+    items: (IMCQ | IMTF | IFIB | IAudioQuestion)[]
 }
 
-export interface Parts{
-    name:string;
-    instruction:string;
-    description:string;
-    time:string;
-    content:QuesitonType;
-    policies:{
-        grade:{
-            questionType:string;
-            weightage:string
-        }[]
-    };
-    items:{questionType:string,questionId:mongoose.Schema.Types.ObjectId}[]
+export interface ITemplate {
+    type: string,
+    time: string,
+    parts: IParts[]
 }
 
-export interface ITemplate{
-    type:string,
-    time:string,
-    parts:Parts[]
+export interface AssessmentTemplate {
+    type: string,
+    time: string,
+    parts: AssessmentParts[]
 }
+export class AssessmentBuilder {
 
-export interface AssessmentTemplate{
-    type:string,
-    time:string,
-    parts:AssessmentParts[]
-}
+    // FIXME: need to handle duplicate of templates (type must be unique)
 
-export interface PopulatedTemplate {
-    type:string,
-    time:string,
-    parts:IParts[];
-}
 
-export class AssessmentBuilder{
-    // private template:PopulatedTemplate | null = null;
-
-    //  constructor(templateId?:string){
-    //     if(templateId) {
-    //         Template.findById(templateId).populate<{"parts":IParts[]}>("parts").then(template=>{
-    //             if(template) {
-    //                 this.template = template;
-    //                 console.log(template);
-    //             }
-    //         }).catch(err=>{
-    //             console.log(err);
-    //         });
-    //     }
-    // }
-
-    async createTemplate(template:ITemplate){
-        let partsId  = await Promise.all(template.parts.map(async (part)=>{
-            const itemIds  = part.items.map(item=>{
-                return {questionType:item.questionType};
+    async createTemplate(template: ITemplate) {
+        let partsId = await Promise.all(template.parts.map(async (part) => {
+            const itemIds = part.items.map(item => {
+                return { questionType: item.questionType };
             })
             const newPart = await Parts.create({
-                name:part.name,
-                instruction:part.instruction,
-                description:part.description,
-                time:part.time,
-                content:part.content,
-                policies:part.policies,
-                items:itemIds
+                name: part.name,
+                instruction: part.instruction,
+                description: part.description,
+                time: part.time,
+                content: part.content,
+                policies: part.policies,
+                items: itemIds
             })
             return String(newPart._id)
         }))
         const temp = await Template.create({
-            type:template.type,
-            time:template.time,
-            parts:partsId
+            type: template.type,
+            time: template.time,
+            parts: partsId
         })
         return String(temp._id);
     }

@@ -7,7 +7,7 @@ export class MTFItem {
     private rightOptions: QuesitonType[];
     private answers: {
         leftAnswer: QuesitonType;
-        rightAnswer: QuesitonType[];
+        rightAnswers: QuesitonType[];
     }[];
     private time: string;
     private type:string;
@@ -17,7 +17,7 @@ export class MTFItem {
         question: QuesitonType[],
         leftOptions: QuesitonType[],
         rightOptions: QuesitonType[],
-        answers: { leftAnswer: QuesitonType; rightAnswer: QuesitonType[] }[],
+        answers: { leftAnswer: QuesitonType; rightAnswers: QuesitonType[] }[],
         time: string,
         type:string,
         tag?: string
@@ -38,10 +38,12 @@ export class MTFItem {
             answers: this.answers,
             time: this.time,
             tag: this.tag ?? "",
-            type:this.type
+            questionType:this.type
         });
         return String(mtf._id);
     }
+    
+    // TODO: need to do evaluation for different media types if needed in the future
     evaluate(studentAnswers: { leftAnswer: QuesitonType; rightAnswer: QuesitonType[] }[], weightage: string): number {
         const weight = Number(weightage);
         if (isNaN(weight)) {
@@ -49,13 +51,13 @@ export class MTFItem {
         }
     
         for (const ans of this.answers) {
-            if (ans.leftAnswer.contentType === "string") {
+            if (ans.leftAnswer.contentType === "text") {
                 const matchingAnswer = studentAnswers.find(studAns => 
-                    studAns.leftAnswer.contentType === "string" &&
+                    studAns.leftAnswer.contentType === "text" &&
                     studAns.leftAnswer.key === ans.leftAnswer.key &&
-                    ans.rightAnswer.every(rightAns => 
+                    ans.rightAnswers.every(rightAns => 
                         studAns.rightAnswer.some(studentRightAns => 
-                            studentRightAns.contentType === "string" && 
+                            studentRightAns.contentType === "text" && 
                             studentRightAns.key === rightAns.key
                         )
                     )

@@ -22,11 +22,13 @@ export class FIBItem{
             question:this.question,
             answers:this.answers,
             time:this.time,
-            type:this.type,
+            questionType:this.type,
             tag:this.tag??""
         })
         return String(fib._id);
     }
+
+    // TODO: need to do evaluation for different media types if needed in the future
 
     evaluate(studentAnswer:QuesitonType[],weightage:string){
         const weight = Number(weightage);
@@ -34,8 +36,8 @@ export class FIBItem{
             throw new Error("Invalid weightage value");
         }
         for (const ans of this.answers) {
-            if (ans.contentType === "string") {
-                const matchingAnswer = studentAnswer.find(studAns => studAns.contentType === "string" && studAns.key === ans.key);
+            if (ans.contentType === "text") {
+                const matchingAnswer = studentAnswer.find(studAns => studAns.contentType === "text" && studAns.key === ans.key);
                 if (!matchingAnswer) {
                     return 0;
                 }

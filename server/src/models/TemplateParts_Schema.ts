@@ -54,12 +54,8 @@ const partsSchema = new mongoose.Schema({
     },
     policies:{
         grade:[{
-            questionType:{
-                type:String
-            },
-            weightage:{
-                type:String,
-            }
+            questionType:String,
+            weightage:String
         }]
     },
     items:[{
