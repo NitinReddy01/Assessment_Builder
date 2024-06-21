@@ -99,7 +99,7 @@ export class AssessmentBuilder{
         return String(temp._id);
     }
 
-    async createAssessment(title:string,assessment:AssessmentTemplate,type:string,time:string){
+    async createAssessment(title:string,assessment:AssessmentTemplate,type:string,time:string ,bucket:string,month:number,week:number, Class:number){
             let partIds = await Promise.all(assessment.parts.map(async (part)=>{
                 const itemIds  = await Promise.all(part.items.map(async (item)=>{
                     if(item.type==="FIB") {
@@ -138,6 +138,10 @@ export class AssessmentBuilder{
                 type,
                 title,
                 time,
+                bucket,
+                month,
+                week,
+                Class,
                 parts:partIds
             })
             return String(newAssessment._id);

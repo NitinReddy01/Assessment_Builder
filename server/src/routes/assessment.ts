@@ -13,10 +13,15 @@ assessmentRouter.post('/add-assessment', async (req, res) => {
     try {
         const type:string = req.body.type;
         const title:string = req.body.title;
+        const bucket:string= req.body.bucket;
+        const month:number= req.body.month;
+        const week:number= req.body.week;
+        const Class:number= req.body.Class;
+        
         const assessment:AssessmentTemplate  = req.body.assessment;
         const time = req.body.time;
         const newAssessment = new AssessmentBuilder();
-        const id = await newAssessment.createAssessment(title, assessment, type, time);
+        const id = await newAssessment.createAssessment(title, assessment, type, time,bucket,month,week,Class);
         res.status(201).json({ message: "Assessment Created", id });
     } catch (error) {
         console.log(error);
